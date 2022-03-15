@@ -18,10 +18,6 @@ class Funny(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ping(self, ctx: commands.Context):
-        await ctx.send(ctx.message.author.mention)
-
-    @commands.command()
     async def bitches(self, ctx: commands.Context, user: discord.User = None):
         await ctx.message.delete()
         
@@ -32,12 +28,14 @@ class Funny(commands.Cog):
 
     @commands.command(aliases=['urban', 'ud'])
     async def urbandictionary(self, ctx: commands.Context, *, term):
-        term = urllib.parse.quote(term)
-        r = requests.get(
-            f'https://api.urbandictionary.com/v0/define?term={term.lower()}')
+        try:
+            term = urllib.parse.quote(term)
+            r = requests.get(
+                f'https://api.urbandictionary.com/v0/define?term={term.lower()}')
 
-        x = r.json()['list'][0]
-        
+            x = r.json()['list'][0]
+        except commands.MissingRequiredArgument:
+            await ctx.reply("Give me something to define :)")
 
         # ['definition', 'permalink', 'thumbs_up', 'sound_urls', 'author',
         #     'word', 'defid', 'current_vote', 'written_on', 'example', 'thumbs_down']
@@ -89,25 +87,6 @@ class Funny(commands.Cog):
     @commands.command(aliases = ["transen", "gten"])
     async def englishtranslate(self, ctx: commands.Context, *, text = None):
         return await self.translate(ctx, 'en', text=text)
-    
-    @translate.error
-    async def translate_error(self, ctx, error):
-        if isinstance(error, commands.CommandInvokeError):
-            await ctx.reply("Tell me a language in the start \n .gt [language] [To be translated] \n or use .gten")
-
-    @urbandictionary.error
-    async def urbandictionary_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.reply("Say something to define :)")    
-
-
-    @bitches.error
-    async def bitches_error(self, ctx: commands.Context,
-                            error: discord.DiscordException):
-        if isinstance(error, commands.UserNotFound):
-            return await ctx.send("User does not exist? Pog")
-
-        raise error
 
 
 def setup(bot: commands.Bot):

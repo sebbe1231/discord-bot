@@ -11,6 +11,7 @@ intents.members = True
 
 bot = commands.Bot(".", intents=intents)
 
+
 @bot.event
 async def on_ready():
     print("Bot is ready!")
@@ -20,12 +21,15 @@ cogs = [
     "gamble",
     "funny",
     "profile",
-    "detection"
+    "detection",
+    "error"
 ]
 
+loaded = []
 for cog in cogs:
     importlib.import_module(f'cogs.{cog}').setup(bot)
+    loaded.append(cog)
 
-    print(f"Loaded: {cog}")
+print("Loaded: "+", ".join(loaded)[::-1].replace(",", " and"[::-1], 1)[::-1])
 
 bot.run(DISCORD_TOKEN)

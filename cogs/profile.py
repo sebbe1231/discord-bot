@@ -1,5 +1,7 @@
 from cProfile import Profile
+from cgitb import text
 from operator import truediv
+from unicodedata import name
 import discord
 from discord.ext import commands
 
@@ -8,7 +10,7 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases = ["av"])
     async def avatar(self, ctx: commands.Context, user: discord.User = None):
         if user is None:
             user = ctx.message.author
@@ -38,14 +40,10 @@ class Profile(commands.Cog):
                         value=create_date, inline=True)
         embed.add_field(name="Join server date",
                         value=joined_date, inline=True)
+        if user.bot == True:
+            embed.set_footer(text = "THIS IS A BOT")
 
         await ctx.reply(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        if isinstance(error, commands.UserNotFound):
-            return await ctx.send("User does not exist")
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Profile(bot))

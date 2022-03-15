@@ -37,9 +37,16 @@ class Gamble(commands.Cog):
         #check if value is int, if not, reply saying they are noob
         try:
             bet = int(bet)
-            guess = int(guess)  
+            guess = int(guess)
+            if guess > 6 or guess <1:
+                await ctx.reply("Your guess is not between 1 and 6, like normal dice...")
+                return
+            if bet < 1:
+                await ctx.reply("Your bet is too low")
+                return
         except ValueError:
             await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            return
         
         #setting up embed
         embed = discord.Embed(title = ":game_die: Rolling...", color=discord.Color.dark_grey())
@@ -50,19 +57,24 @@ class Gamble(commands.Cog):
 
         #wait 1-3 seconds, then reply with answer
         die_result = random.randint(1, 6)
+        result_disc = "You lost :("
+        result_color = discord.Color.red()
         if guess == die_result:
-            embed_result = discord.Embed(title = ":game_die: Results are in!", description = "You Won!", color=discord.Color.green())
-            embed_result.add_field(name="Dice landed on:", value=die_result, inline=False)
-            embed_result.add_field(name="Your bet:", value=bet, inline=True)
-            embed_result.add_field(name="Your guess:", value=guess, inline=True)
-        else:
-            embed_result = discord.Embed(title = ":game_die: Results are in!", description = "You lost :(", color=discord.Color.red())
-            embed_result.add_field(name="Dice landed on:", value=die_result, inline=False)
-            embed_result.add_field(name="Your bet:", value=bet, inline=True)
-            embed_result.add_field(name="Your guess:", value=guess, inline=True)
+            result_disc = "You Won!"
+            result_color = discord.Color.green()
+
+        embed_result = discord.Embed(title = ":game_die: Results are in!", description = result_disc, color=result_color)
+        embed_result.add_field(name="Dice landed on:", value=die_result, inline=False)
+        embed_result.add_field(name="Your bet:", value=bet, inline=True)
+        embed_result.add_field(name="Your guess:", value=guess, inline=True)
         
+        #needs to be 3x points
         await asyncio.sleep(random.randint(1, 3))
         await msg.edit(embed = embed_result)
+
+    @commands.command()
+    async def coinflip(self, ctx: commands.Context):
+        pass
         
         
 

@@ -65,7 +65,8 @@ class Funny(commands.Cog):
         embed.set_footer(text = def_date)
 
         await ctx.reply(embed=embed)
-    
+
+
     @commands.command(aliases=["trans", "gt"])
     async def translate(self, ctx: commands.Context, language, *, text = None):
         if text is None:

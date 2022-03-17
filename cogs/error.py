@@ -16,7 +16,7 @@ class Error(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.reply("You're missing an argument, use `.help <command>` to see what is needed")
         elif isinstance(error, commands.CommandInvokeError):
-            await ctx.reply("Hmmm something went wrong, check your message, and use `.help <command>` to see needed arguments")
+            await ctx.reply("Hmmm something went wrong, check your message, and use `.help <command>` to see needed arguments. Or maybe the developer is just a dumbass")
             
             
 

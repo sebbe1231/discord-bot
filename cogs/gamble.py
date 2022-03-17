@@ -11,7 +11,7 @@ class Gamble(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases = ["dd"])
+    @commands.command(aliases=["dd"])
     async def ddice(self, ctx: commands.Context, NumDice=None):
         if NumDice is None:
             NumDice = 6
@@ -29,10 +29,12 @@ class Gamble(commands.Cog):
                                      description=result, color=discord.Color.purple())
         await msg.edit(embed=embed_result)
 
-    @commands.command(aliases = ["d"])
+    @commands.command(aliases=["d"])
     async def dice(self, ctx: commands.Context, bet=None, guess=None):
+        money = int(20)
+
         if bet is None or guess is None:
-            await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            return await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
 
         # check if value is int, if not, reply saying they are noob
         try:
@@ -45,7 +47,11 @@ class Gamble(commands.Cog):
                 await ctx.reply("Your bet is too low")
                 return
         except ValueError:
-            await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            return await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            
+
+        if bet > money:
+            await ctx.reply("No money L")
             return
 
         # setting up embed
@@ -60,9 +66,13 @@ class Gamble(commands.Cog):
         die_result = random.randint(1, 6)
         result_disc = "You lost :("
         result_color = discord.Color.red()
+        money = money-bet
+        change = f"-{bet}"
         if guess == die_result:
             result_disc = "You Won!"
             result_color = discord.Color.green()
+            money = money+(3*bet)
+            change = f"+{bet}"
 
         embed_result = discord.Embed(
             title=":game_die: Results are in!", description=result_disc, color=result_color)
@@ -70,6 +80,9 @@ class Gamble(commands.Cog):
                                value=die_result, inline=False)
         embed_result.add_field(name="Your bet:", value=bet, inline=True)
         embed_result.add_field(name="Your guess:", value=guess, inline=True)
+        embed_result.add_field(name="Current Money:",
+                               value=money, inline=False)
+        embed_result.add_field(name="Change:", value=change, inline=True)
 
         # needs to be 3x points
         await asyncio.sleep(random.randint(1, 3))

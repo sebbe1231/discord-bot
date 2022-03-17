@@ -22,7 +22,8 @@ cogs = [
     "funny",
     "profile",
     "detection",
-    "error"
+    "error",
+    "reddit"
 ]
 
 loaded = []

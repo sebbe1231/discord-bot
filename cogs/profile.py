@@ -32,14 +32,16 @@ class Profile(commands.Cog):
         
         # Embed creation
         embed = discord.Embed(title=user_name, color=0xff00f2)
-        embed.add_field(name="Nickname", value=user.nick, inline=True)
         embed.set_thumbnail(url=user.avatar_url)
+        
+        embed.add_field(name="Nickname", value=user.nick, inline=True)
         embed.add_field(name="User ID", value=user.id, inline=True)
         embed.add_field(name="Status", value=user.status, inline=False)
         embed.add_field(name="Account creation date",
                         value=create_date, inline=True)
         embed.add_field(name="Join server date",
                         value=joined_date, inline=True)
+        
         if user.bot == True:
             embed.set_footer(text = "THIS IS A BOT")
 

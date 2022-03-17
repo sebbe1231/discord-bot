@@ -39,7 +39,7 @@ class Admin(commands.Cog):
         else:
             role = discord.utils.get(ctx.message.guild.roles, name="muted")
             await user.remove_roles(role)
-            await ctx.send(f"User: {user}, has been unmuted")
+            await ctx.send(f"User: {user}, has been unmuted")    
 
     @commands.command()
     async def nuke(self, ctx: commands.Context):

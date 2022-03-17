@@ -1,6 +1,6 @@
 import importlib
 import random
-from secret import DISCORD_TOKEN
+from os import environ
 
 import discord
 from discord.ext import commands
@@ -33,4 +33,4 @@ for cog in cogs:
 
 print("Loaded: "+", ".join(loaded)[::-1].replace(",", " and"[::-1], 1)[::-1])
 
-bot.run(DISCORD_TOKEN)
+bot.run(environ['DISCORD_TOKEN'])

@@ -5,7 +5,6 @@ from aiohttp import request
 import discord
 from discord.ext import commands
 from googletrans import Translator
-from parso import parse
 import requests
 import urllib.parse
 from datetime import datetime

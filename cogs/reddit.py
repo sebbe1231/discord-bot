@@ -110,7 +110,7 @@ class Reddit(commands.Cog):
             async for submission in reddit_user.submissions.top("all"):
                 user_subs.append(submission)
             top_sub = await self.reddit.submission(id=user_subs[0])
-            if top_sub.stickied:
+            if top_sub.stickied is True:
                 top_sub = user_subs[1]
             bottom_sub = await self.reddit.submission(id=user_subs[-1])
         except IndexError:

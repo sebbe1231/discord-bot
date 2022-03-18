@@ -1,8 +1,5 @@
 import asyncio
 import random
-from multiprocessing.sharedctypes import Value
-from turtle import color, title
-from unittest import result
 
 import discord
 from discord.ext import commands

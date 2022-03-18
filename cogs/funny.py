@@ -1,16 +1,12 @@
-from gettext import translation
-from turtle import title
-from unicodedata import name
-from aiohttp import request
-import discord
-from discord.ext import commands
-from googletrans import Translator
-import requests
 import urllib.parse
 from datetime import datetime
 
-from setuptools import Command
+import discord
+import requests
+from discord.ext import commands
+from googletrans import Translator
 from tr import langs
+
 
 class Funny(commands.Cog):
     def __init__(self, bot: commands.Bot):

@@ -1,7 +1,4 @@
 from cProfile import Profile
-from cgitb import text
-from operator import truediv
-from unicodedata import name
 import discord
 from discord.ext import commands
 

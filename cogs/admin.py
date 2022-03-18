@@ -1,5 +1,3 @@
-from email import message
-from types import MemberDescriptorType
 import discord
 from discord.ext import commands
 

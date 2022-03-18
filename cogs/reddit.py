@@ -1,5 +1,4 @@
 from datetime import datetime
-from distutils.log import error
 from random import choice
 
 import asyncpraw

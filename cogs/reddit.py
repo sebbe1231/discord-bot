@@ -36,26 +36,27 @@ class Reddit(commands.Cog):
 
             submissions = [subm async for subm in subreddit.hot(limit=100)]
             submission = choice(submissions)
-        except (prawexceptions.Redirect, prawexceptions.Forbidden):
-            await ctx.reply("This subreddit does not exist, or is currently not accessible")
-            return await msg.delete()
+        except (prawexceptions.Redirect, prawexceptions.Forbidden, prawexceptions.NotFound):
+            return await msg.edit(content="This subreddit does not exist, or is currently not accessible", embed=None)
 
         if submission.over_18:
             if ctx.channel.is_nsfw():
                 pass
             else:
-                await ctx.reply("NSFW is only allowed in NSFW channels")
-                return await msg.delete()
+                return await msg.edit(content="NSFW is only allowed in NSFW channels", embed=None)
 
         # create answer embed
         finished_embed = discord.Embed(
             title=f"r/{submission.subreddit}", url=f"https://reddit.com{submission.permalink}")
         if submission.is_self:
             try:
+                self_text = submission.selftext
+                if not self_text:
+                    self_text = "_ _"
                 finished_embed.add_field(
-                    name=submission.title, value=str(submission.selftext))
+                    name=submission.title, value=self_text)
             except commands.CommandInvokeError:
-                return ctx.reply("Post too big")
+                return await msg.edit(content="Post too big", embed=None)
         else:
             finished_embed.add_field(name=submission.title, value="** **")
             finished_embed.set_image(url=submission.url)
@@ -68,7 +69,58 @@ class Reddit(commands.Cog):
         try:
             await msg.edit(embed=finished_embed)
         except commands.CommandInvokeError:
-            return await ctx.reply("Post too big")
+            return await msg.edit(content="Post too big", embed=None)
+
+    @commands.command(aliases=["ureddit", "redditor"])
+    async def reddit_user(self, ctx: commands.Context, reddit_user):
+        if reddit_user is None:
+            return await ctx.reply("Give me a redditor")
+
+        # loading embed
+        loading_embed = discord.Embed(
+            title="Loading...", description=f"This might take a bit... \nSubmitted by @{ctx.author}")
+        msg = await ctx.reply(embed=loading_embed)
+
+        error_embed = discord.Embed(title="ERROR", color=discord.Color.red())
+
+        try:
+            reddit_user = await self.reddit.redditor(reddit_user, fetch=True)
+        except (prawexceptions.Redirect, prawexceptions.Forbidden, prawexceptions.NotFound):
+            error_embed.description = "User does not exist or is banned"
+            return await msg.edit(embed=error_embed)
+        
+        #making the finished embed
+        finished_embed = discord.Embed(
+            title=f"u/{reddit_user.name}", description=f"id: {reddit_user.id}", url=f"https://reddit.com/u/{reddit_user}")
+        finished_embed.set_thumbnail(url=reddit_user.icon_img)
+        finished_embed.set_author(
+            name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        finished_embed.set_footer(
+            text=f"Account created {datetime.utcfromtimestamp(reddit_user.created_utc).strftime('%Y-%m-%d')}")
+        finished_embed.add_field(name="Comment karma",
+                                value=reddit_user.comment_karma, inline=True)
+        finished_embed.add_field(
+            name="Post karma", value=reddit_user.link_karma, inline=True)
+        finished_embed.add_field(
+            name="Reddit mod?", value=reddit_user.is_mod, inline=True)
+        
+        #check if user has any submissions
+        try:
+            user_subs = []
+            async for submission in reddit_user.submissions.top("all"):
+                user_subs.append(submission)
+            top_sub = await self.reddit.submission(id=user_subs[0])
+            bottom_sub = await self.reddit.submission(id=user_subs[-1])
+        except IndexError:
+            return await msg.edit(embed = finished_embed)
+
+        #loading the top and bottom submissions
+        finished_embed.add_field(
+            name="Top post", value=f"Upvotes: {top_sub.score} \n[Link](https://reddit.com{top_sub.permalink})", inline=False)
+        finished_embed.add_field(
+            name="Worst post", value=f"Upvotes: {bottom_sub.score} \n[Link](https://reddit.com{bottom_sub.permalink})", inline=False)
+
+        await msg.edit(embed=finished_embed)
 
 
 def setup(bot: commands.Bot):

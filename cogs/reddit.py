@@ -110,6 +110,8 @@ class Reddit(commands.Cog):
             async for submission in reddit_user.submissions.top("all"):
                 user_subs.append(submission)
             top_sub = await self.reddit.submission(id=user_subs[0])
+            if top_sub.stickied:
+                top_sub = user_subs[1]
             bottom_sub = await self.reddit.submission(id=user_subs[-1])
         except IndexError:
             return await msg.edit(embed = finished_embed)

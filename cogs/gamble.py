@@ -11,6 +11,7 @@ class Gamble(commands.Cog):
 
     @commands.command(aliases=["dd"])
     async def ddice(self, ctx: commands.Context, NumDice=None):
+        """Test"""
         if NumDice is None:
             NumDice = 6
 

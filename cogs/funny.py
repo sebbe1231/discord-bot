@@ -29,11 +29,8 @@ class Funny(commands.Cog):
                 f'https://api.urbandictionary.com/v0/define?term={term.lower()}')
 
             x = r.json()['list'][0]
-        except commands.MissingRequiredArgument:
-            await ctx.reply("Give me something to define :)")
-
-        # ['definition', 'permalink', 'thumbs_up', 'sound_urls', 'author',
-        #     'word', 'defid', 'current_vote', 'written_on', 'example', 'thumbs_down']
+        except IndexError:
+            return await ctx.reply(f"There is no deffinition for that term")
 
         definition = x['definition']
         definition_link = x['permalink']
@@ -63,12 +60,17 @@ class Funny(commands.Cog):
 
 
     @commands.command(aliases=["trans", "gt"])
-    async def translate(self, ctx: commands.Context, language, *, text = None):
+    async def translate(self, ctx: commands.Context, language, *, text):
+        #return await ctx.reply("This function does not work yet sadge")
         if text is None:
-            await ctx.reply("Give me something to translate! >:(")
+            await ctx.reply("give me a language to translate to, and something to translate ``.translate [language] <text>``")
             return
-        translator = Translator(service_urls = ['translate.google.com'])
-        translation = translator.translate(str(text), dest = language)
+
+        try:
+            translator = Translator()
+            translation = translator.translate(text=str(text), dest=language)
+        except ValueError:
+            return await ctx.reply(f"**{language}** is not a valid language option")
         #await ctx.reply(translation.text)
         source = translation.src
         output = translation.dest
@@ -80,9 +82,6 @@ class Funny(commands.Cog):
 
         await ctx.reply(embed=embed)
     
-    @commands.command(aliases = ["transen", "gten"])
-    async def englishtranslate(self, ctx: commands.Context, *, text = None):
-        return await self.translate(ctx, 'en', text=text)
 
 
 def setup(bot: commands.Bot):

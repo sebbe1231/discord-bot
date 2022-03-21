@@ -9,7 +9,7 @@ intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
 
-bot = commands.Bot(".", intents=intents)
+bot = commands.Bot(".", intents=intents, help_command=None)
 
 
 @bot.event
@@ -23,7 +23,8 @@ cogs = [
     "profile",
     "detection",
     "error",
-    "reddit"
+    "reddit",
+    "essential"
 ]
 
 loaded = []
@@ -32,5 +33,9 @@ for cog in cogs:
     loaded.append(cog)
 
 print("Loaded: "+", ".join(loaded)[::-1].replace(",", " and"[::-1], 1)[::-1])
+
+@commands.command
+async def help(ctx: commands.command):
+    pass
 
 bot.run(environ['DISCORD_TOKEN'])

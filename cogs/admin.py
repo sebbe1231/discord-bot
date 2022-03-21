@@ -12,11 +12,13 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def admin(self, ctx: commands.Context):
+        """Test to see if you are admin"""
         print(ctx.author)
         await ctx.reply("You are an admin!")
 
     @commands.command(aliases = ["m"])
     async def mute(self, ctx: commands.Context, user: discord.Member = None):
+        """Mute a user"""
         if user is None:
             role = discord.utils.get(ctx.message.guild.roles, name="muted")
             user = ctx.message.author
@@ -29,6 +31,7 @@ class Admin(commands.Cog):
 
     @commands.command(aliases = ["un"])
     async def unmute(self, ctx: commands.Context, user: discord.Member = None):
+        """Unmute a user"""
         if user is None:
             role = discord.utils.get(ctx.message.guild.roles, name="muted")
             user = ctx.message.author
@@ -41,6 +44,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def nuke(self, ctx: commands.Context):
+        """Clear chat"""
         await ctx.send("** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ")
 
 

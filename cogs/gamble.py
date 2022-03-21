@@ -11,7 +11,7 @@ class Gamble(commands.Cog):
 
     @commands.command(aliases=["dd"])
     async def ddice(self, ctx: commands.Context, NumDice=None):
-        """Test"""
+        """Role a dice, with as many faces as you like (No points are involved in this command)"""
         if NumDice is None:
             NumDice = 6
 
@@ -30,6 +30,7 @@ class Gamble(commands.Cog):
 
     @commands.command(aliases=["d"])
     async def dice(self, ctx: commands.Context, bet=None, guess=None):
+        """Role a 6 faced dice, and try your luck (3x multiplier)"""
         money = int(20)
 
         if bet is None or guess is None:
@@ -88,6 +89,7 @@ class Gamble(commands.Cog):
 
     @commands.command()
     async def coinflip(self, ctx: commands.Context):
+        """Flip a coin, garenteed 50% chance (Still in the works)"""
         pass
 
 

@@ -9,6 +9,7 @@ class Profile(commands.Cog):
 
     @commands.command(aliases = ["av"])
     async def avatar(self, ctx: commands.Context, user: discord.User = None):
+        """Get the avatar of a given user (Works for users not in the server too)"""
         if user is None:
             user = ctx.message.author
             await ctx.reply(user.avatar_url_as(static_format='png'))
@@ -20,6 +21,7 @@ class Profile(commands.Cog):
     # https://discordpy.readthedocs.io/en/stable/api.html?highlight=user#discord.User
     @commands.command(aliases=["p"])
     async def profile(self, ctx: commands.Context, user: discord.Member = None):
+        """Get information about a discord user in the server"""
         if user is None:
             user = ctx.message.author
 

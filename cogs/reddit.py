@@ -22,6 +22,7 @@ class Reddit(commands.Cog):
 
     @commands.command(aliases=["reddit"])
     async def subreddit(self, ctx: commands.Context, subreddit):
+        """Picks a random post from your chosen subreddit"""
         if subreddit is None:
             return await ctx.reply("Give me a subreddit")
 
@@ -73,6 +74,7 @@ class Reddit(commands.Cog):
 
     @commands.command(aliases=["ureddit", "redditor"])
     async def reddit_user(self, ctx: commands.Context, reddit_user):
+        """Search up information on a chosen redditor"""
         if reddit_user is None:
             return await ctx.reply("Give me a redditor")
 

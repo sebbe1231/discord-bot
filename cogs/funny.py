@@ -14,6 +14,7 @@ class Funny(commands.Cog):
 
     @commands.command()
     async def bitches(self, ctx: commands.Context, user: discord.User = None):
+        """no bitches?"""
         await ctx.message.delete()
         
         if user is None:
@@ -23,6 +24,7 @@ class Funny(commands.Cog):
 
     @commands.command(aliases=['urban', 'ud'])
     async def urbandictionary(self, ctx: commands.Context, *, term):
+        """Search up a term in urbandictionary.com"""
         try:
             term = urllib.parse.quote(term)
             r = requests.get(
@@ -61,6 +63,7 @@ class Funny(commands.Cog):
 
     @commands.command(aliases=["trans", "gt"])
     async def translate(self, ctx: commands.Context, language, *, text):
+        """Translate sentence to chosen language, it auto detects your input. (chinese is "zh-cn" for simplified and "zh-tw" for traditional)"""
         #return await ctx.reply("This function does not work yet sadge")
         if text is None:
             await ctx.reply("give me a language to translate to, and something to translate ``.translate [language] <text>``")

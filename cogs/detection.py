@@ -6,7 +6,7 @@ keywords = [
     ["ratio", "counter ratio"]
 ]
 keywords2 = [
-    ["sweden", "sverige", "swede", "svensk"]
+    ["sweden", "sverige", "swede", "svensk", "swedish"]
 ]
 
 class Detection(commands.Cog):
@@ -28,9 +28,6 @@ class Detection(commands.Cog):
             #sweden
             for kw in keywords2[0]:
                 if kw in lmessage:
-                    user = message.author
-                    role = discord.utils.get(message.guild.roles, name = "muted")
-                    await user.add_roles(role)
                     await message.delete()
 
 

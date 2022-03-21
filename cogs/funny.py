@@ -81,7 +81,6 @@ class Funny(commands.Cog):
         embed.add_field(name = "Result:", value = translation.text, inline = False)
 
         await ctx.reply(embed=embed)
-    
 
 
 def setup(bot: commands.Bot):

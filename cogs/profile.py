@@ -6,6 +6,7 @@ from discord.ext import commands
 class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = ":man:"
 
     @commands.command(aliases = ["av"])
     async def avatar(self, ctx: commands.Context, user: discord.User = None):

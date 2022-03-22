@@ -3,8 +3,10 @@ from discord.ext import commands
 
 
 class Admin(commands.Cog):
+    """Commands for admins only"""
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = ":shield:"
 
     async def cog_check(self, ctx: commands.Context):
         #admin = discord.Member.guild_permissions.administrator

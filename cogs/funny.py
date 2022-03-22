@@ -11,6 +11,7 @@ from tr import langs
 class Funny(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.emoji = ":clown:"
 
     @commands.command()
     async def bitches(self, ctx: commands.Context, user: discord.User = None):
@@ -63,7 +64,7 @@ class Funny(commands.Cog):
 
     @commands.command(aliases=["trans", "gt"])
     async def translate(self, ctx: commands.Context, language, *, text):
-        """Translate sentence to chosen language, it auto detects your input. (chinese is "zh-cn" for simplified and "zh-tw" for traditional)"""
+        """Translate sentence to chosen language, it auto detects your input."""
         #return await ctx.reply("This function does not work yet sadge")
         if text is None:
             await ctx.reply("give me a language to translate to, and something to translate ``.translate [language] <text>``")

@@ -11,6 +11,7 @@ from os import environ
 class Reddit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = ":poop:"
 
         self.reddit = asyncpraw.Reddit(
             client_id=environ['PRAW_CLIENT_ID'],

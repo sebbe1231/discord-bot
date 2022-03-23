@@ -74,7 +74,7 @@ class Funny(commands.Cog):
             translator = Translator()
             translation = translator.translate(text=str(text), dest=language)
         except ValueError:
-            return await ctx.reply(f"**{language}** is not a valid language option")
+            return await ctx.reply(f"That is not a valid language option")
         #await ctx.reply(translation.text)
         source = translation.src
         output = translation.dest

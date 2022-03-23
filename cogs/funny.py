@@ -65,7 +65,6 @@ class Funny(commands.Cog):
     @commands.command(aliases=["trans", "gt"])
     async def translate(self, ctx: commands.Context, language, *, text):
         """Translate sentence to chosen language, it auto detects your input."""
-        #return await ctx.reply("This function does not work yet sadge")
         if text is None:
             await ctx.reply("give me a language to translate to, and something to translate ``.translate [language] <text>``")
             return
@@ -85,7 +84,29 @@ class Funny(commands.Cog):
         embed.add_field(name = "Result:", value = translation.text, inline = False)
 
         await ctx.reply(embed=embed)
+    
+    @commands.command(aliases = ["transsrc", "gtsrc"])
+    async def translatesrc(self, ctx: commands.Context, language_src, language_dest, *, text):
+        """Translate something with a given source language and destination language"""
+        if text is None:
+            await ctx.reply("give me a language to translate to, and something to translate ``.help translatesrc``")
+            return
 
+        try:
+            translator = Translator()
+            translation = translator.translate(text=str(text), dest=language_dest, src=language_src)
+        except ValueError:
+            return await ctx.reply(f"That is not a valid language option")
+        
+        source = translation.src
+        output = translation.dest
+        embed = discord.Embed(title = "Translation complete!", color=0xff00f2, text = "translate.google.com")
+        embed.add_field(name = "Translated from:", value = langs.get(source, 'unknown'), inline=True)
+        embed.add_field(name = "Translated to:", value = langs.get(output, 'unknown'), inline = True)
+        embed.add_field(name = "Source:", value = text, inline = False)
+        embed.add_field(name = "Result:", value = translation.text, inline = False)
+
+        await ctx.reply(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Funny(bot))

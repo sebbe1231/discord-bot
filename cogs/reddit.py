@@ -1,5 +1,6 @@
 from datetime import datetime
 from random import choice
+import random
 
 import asyncpraw
 import asyncprawcore.exceptions as prawexceptions
@@ -49,24 +50,31 @@ class Reddit(commands.Cog):
 
         # create answer embed
         finished_embed = discord.Embed(
-            title=f"r/{submission.subreddit}", url=f"https://reddit.com{submission.permalink}")
-        if submission.is_self:
-            try:
-                self_text = submission.selftext
-                if not self_text:
-                    self_text = "_ _"
-                finished_embed.add_field(
-                    name=submission.title, value=self_text)
-            except commands.CommandInvokeError:
-                return await msg.edit(content="Post too big", embed=None)
-        else:
-            finished_embed.add_field(name=submission.title, value="** **")
-            finished_embed.set_image(url=submission.url)
+            title=f"{submission.title}")
+        finished_embed.add_field(name=f"r/{submission.subreddit}", value=f"{submission.selftext} \n \n[Link](https://reddit.com{submission.permalink})")
+        finished_embed.set_thumbnail(url=submission.url)
 
         finished_embed.set_author(
             name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         finished_embed.set_footer(
             text=f"upvotes: {submission.score} \nreddit.com/u/{submission.author} \nuploaded: {datetime.utcfromtimestamp(submission.created_utc).strftime('%Y-%m-%d')}")
+
+        # get comments of post
+        comments = await submission.comments()
+        final_comment = []
+        #submission.comments.replace_more(limit=10)
+        for i, comment in enumerate(comments):
+            if isinstance(comment, asyncpraw.reddit.models.MoreComments):
+                continue
+            if i > 10:
+                break
+            if len(comment.body) > 1024:
+                continue
+            final_comment.append(comment)
+            continue
+        comment_int = random.randint(0,10)
+        finished_embed.add_field(name="Comment", value=f"u/{final_comment[comment_int].author} \n{final_comment[comment_int].body} \nUpvotes: {final_comment[comment_int].score}", inline=False)
+
 
         try:
             await msg.edit(embed=finished_embed)
@@ -91,8 +99,8 @@ class Reddit(commands.Cog):
         except (prawexceptions.Redirect, prawexceptions.Forbidden, prawexceptions.NotFound):
             error_embed.description = "User does not exist or is banned"
             return await msg.edit(embed=error_embed)
-        
-        #making the finished embed
+
+        # making the finished embed
         finished_embed = discord.Embed(
             title=f"u/{reddit_user.name}", description=f"id: {reddit_user.id}", url=f"https://reddit.com/u/{reddit_user}")
         finished_embed.set_thumbnail(url=reddit_user.icon_img)
@@ -101,13 +109,13 @@ class Reddit(commands.Cog):
         finished_embed.set_footer(
             text=f"Account created {datetime.utcfromtimestamp(reddit_user.created_utc).strftime('%Y-%m-%d')}")
         finished_embed.add_field(name="Comment karma",
-                                value=reddit_user.comment_karma, inline=True)
+                                 value=reddit_user.comment_karma, inline=True)
         finished_embed.add_field(
             name="Post karma", value=reddit_user.link_karma, inline=True)
         finished_embed.add_field(
             name="Reddit mod?", value=reddit_user.is_mod, inline=True)
-        
-        #check if user has any submissions
+
+        # check if user has any submissions
         try:
             user_subs = []
             async for submission in reddit_user.submissions.top("all"):
@@ -118,9 +126,9 @@ class Reddit(commands.Cog):
                 top_sub = x
             bottom_sub = await self.reddit.submission(id=user_subs[-1])
         except IndexError:
-            return await msg.edit(embed = finished_embed)
+            return await msg.edit(embed=finished_embed)
 
-        #loading the top and bottom submissions
+        # loading the top and bottom submissions
         finished_embed.add_field(
             name="Top post", value=f"Upvotes: {top_sub.score} \n[Link](https://reddit.com{top_sub.permalink})", inline=False)
         finished_embed.add_field(

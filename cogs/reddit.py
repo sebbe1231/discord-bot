@@ -33,6 +33,8 @@ class Reddit(commands.Cog):
             title="Loading...", description=f"Submitted by @{ctx.author}")
         msg = await ctx.reply(embed=loading_embed)
 
+        error_embed = discord.Embed(title="ERROR", color=discord.Color.red())
+
         try:
             # getting values
             subreddit = await self.reddit.subreddit(subreddit)
@@ -40,13 +42,15 @@ class Reddit(commands.Cog):
             submissions = [subm async for subm in subreddit.hot(limit=100)]
             submission = choice(submissions)
         except (prawexceptions.Redirect, prawexceptions.Forbidden, prawexceptions.NotFound):
-            return await msg.edit(content="This subreddit does not exist, or is currently not accessible", embed=None)
-
+            error_embed.description = "This subreddit does not exist, or is currently not accessible"
+            return await msg.edit(embed=error_embed)
+            
         if submission.over_18:
             if ctx.channel.is_nsfw():
                 pass
             else:
-                return await msg.edit(content="NSFW is only allowed in NSFW channels", embed=None)
+                error_embed.description = "NSFW is only allowed in NSFW channels"
+                return await msg.edit(embed=error_embed)
 
         # create answer embed
         finished_embed = discord.Embed(
@@ -73,13 +77,16 @@ class Reddit(commands.Cog):
             final_comment.append(comment)
             continue
         comment_int = random.randint(0,10)
-        finished_embed.add_field(name="Comment", value=f"u/{final_comment[comment_int].author} \n{final_comment[comment_int].body} \nUpvotes: {final_comment[comment_int].score}", inline=False)
-
+        try:
+            finished_embed.add_field(name="Comment", value=f"u/{final_comment[comment_int].author} \n{final_comment[comment_int].body} \nUpvotes: {final_comment[comment_int].score}", inline=False)
+        except IndexError:
+            return finished_embed.add_field(name="Comment", value="No comments")
 
         try:
             await msg.edit(embed=finished_embed)
         except commands.CommandInvokeError:
-            return await msg.edit(content="Post too big", embed=None)
+            error_embed.description = "Post too big, try again"
+            return await msg.edit(embed=error_embed)
 
     @commands.command(aliases=["ureddit", "redditor"])
     async def reddit_user(self, ctx: commands.Context, reddit_user):

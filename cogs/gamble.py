@@ -27,6 +27,7 @@ class Gamble(commands.Cog):
         await asyncio.sleep(random.randint(1, 3))
         embed_result = discord.Embed(title=":game_die: you got!:",
                                      description=result, color=discord.Color.purple())
+        
         await msg.edit(embed=embed_result)
 
     @commands.command(aliases=["d"])
@@ -35,7 +36,7 @@ class Gamble(commands.Cog):
         money = int(20)
 
         if bet is None or guess is None:
-            return await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            return await ctx.reply("Give me bet amount and guess \n ``.help dice``")
 
         # check if value is int, if not, reply saying they are noob
         try:
@@ -48,7 +49,7 @@ class Gamble(commands.Cog):
                 await ctx.reply("Your bet is too low")
                 return
         except ValueError:
-            return await ctx.reply("Give me bet amount and guess \n .dice [bet] [guess]")
+            return await ctx.reply("Give me bet amount and guess \n ``.help dice``")
 
         if bet > money:
             await ctx.reply("No money L")

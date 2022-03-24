@@ -6,6 +6,7 @@ from discord.ext import commands
 
 
 class Gamble(commands.Cog):
+    """Commands for your gambling needs (STILL IN THE WORKS, im lazy)"""
     def __init__(self, bot):
         self.bot = bot
         self.emoji = ":game_die:"

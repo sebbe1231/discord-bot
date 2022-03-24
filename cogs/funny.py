@@ -9,6 +9,7 @@ from tr import langs
 
 
 class Funny(commands.Cog):
+    """The best commands"""
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.emoji = ":clown:"

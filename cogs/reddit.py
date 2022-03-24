@@ -10,6 +10,7 @@ from os import environ
 
 
 class Reddit(commands.Cog):
+    """Commands utilizing the reddit API"""
     def __init__(self, bot):
         self.bot = bot
         self.emoji = ":poop:"

@@ -31,7 +31,7 @@ class Admin(commands.Cog):
             await user.add_roles(role)
             await ctx.send(f"User: {user}, has been muted")
 
-    @commands.command(aliases = ["un"])
+    @commands.command(aliases = ["um"])
     async def unmute(self, ctx: commands.Context, user: discord.Member = None):
         """Unmute a user"""
         if user is None:
@@ -48,11 +48,13 @@ class Admin(commands.Cog):
     async def nuke(self, ctx: commands.Context):
         """Clear chat"""
         await ctx.send("** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ** **\n ")
+        await ctx.message.delete()
 
     @commands.command()
     async def purge(self, ctx: commands.Context, purge_limit):
         """Purge a specific amount of messages"""
         try:
+            await ctx.message.delete()
             purge_limit = int(purge_limit)
         except ValueError:
             return await ctx.reply("Not a valid limit")

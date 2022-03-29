@@ -25,7 +25,8 @@ cogs = [
     "detection",
     "error",
     "reddit",
-    "help"
+    "help",
+    "twitter"
 ]
 
 loaded = []

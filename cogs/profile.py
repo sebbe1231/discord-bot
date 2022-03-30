@@ -60,7 +60,6 @@ class Profile(commands.Cog):
                 started_at = datetime.fromtimestamp(
                     activity.timestamps['start']/1000)
                 difference = str(datetime.now()-started_at)[:-7]
-                print("playing")
                 embed.add_field(
                     name="Playing", value=f"**{activity.name}** \n{activity.details} \n{difference} \n{activity.large_image_text}", inline=False)
             if activity.type == discord.ActivityType.listening:

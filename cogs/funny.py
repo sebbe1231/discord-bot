@@ -7,6 +7,7 @@ from discord.ext import commands
 from googletrans import Translator
 from tr import langs
 
+import re
 
 class Funny(commands.Cog):
     """The best commands"""
@@ -49,6 +50,29 @@ class Funny(commands.Cog):
 
         definition_ex = x['example']
 
+        if len(definition) > 1024:
+            definition = definition[:1019]+"\n..."
+        if len(definition_ex) > 1024:
+            definition_ex = definition_ex[:1019]+"\n..."
+        
+        #make clickable ref links in definition
+        m_definition = re.findall(
+            r"(\[(.*?)\])",
+            definition
+        )
+        for defi in m_definition:
+            definition = definition.replace(defi[0], 
+            f"{defi[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(defi[1])})")
+
+        #make clickable ref links in example
+        m_example = re.findall(
+            r"(\[(.*?)\])",
+            definition_ex
+        )
+        for examp in m_example:
+            definition_ex = definition_ex.replace(examp[0],
+            f"{examp[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(examp[1])})")
+
         embed = discord.Embed(
             title=def_word.capitalize(),
             url=definition_link,
@@ -78,6 +102,13 @@ class Funny(commands.Cog):
         #await ctx.reply(translation.text)
         source = translation.src
         output = translation.dest
+
+        result_text = translation.text
+        if len(result_text) > 1024:
+            result_text = result_text[1019]+"\n..."
+        if len(text) > 1024:
+            text = text[1019]+"\n..."
+
         embed = discord.Embed(title = "Translation complete!", color=0xff00f2, text = "translate.google.com")
         embed.add_field(name = "Translated from:", value = langs.get(source, 'unknown'), inline=True)
         embed.add_field(name = "Translated to:", value = langs.get(output, 'unknown'), inline = True)
@@ -101,6 +132,12 @@ class Funny(commands.Cog):
         
         source = translation.src
         output = translation.dest
+        result_text = translation.text
+        if len(result_text) > 1024:
+            result_text = result_text[1019]+"\n..."
+        if len(text) > 1024:
+            text = text[1019]+"\n..."
+
         embed = discord.Embed(title = "Translation complete!", color=0xff00f2, text = "translate.google.com")
         embed.add_field(name = "Translated from:", value = langs.get(source, 'unknown'), inline=True)
         embed.add_field(name = "Translated to:", value = langs.get(output, 'unknown'), inline = True)

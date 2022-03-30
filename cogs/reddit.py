@@ -25,7 +25,7 @@ class Reddit(commands.Cog):
 
     @commands.command(aliases=["reddit"])
     async def subreddit(self, ctx: commands.Context, subreddit):
-        """Picks a random post from your chosen subreddit"""
+        """Picks a random post from your chosen subreddit (some subreddits will not load, i cant explain why... cause idk)"""
         if subreddit is None:
             return await ctx.reply("Give me a subreddit")
 

@@ -14,7 +14,9 @@ class Error(commands.Cog):
         elif isinstance(error, commands.CommandNotFound):
             return
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.reply("You're missing an argument, use `.help <command>` to see what is needed")
+            help_command = self.bot.help_command
+            help_command.context = ctx
+            return await help_command.send_command_help(ctx.command, True)
         elif isinstance(error, commands.CommandInvokeError):
             await ctx.reply("Hmmm something went wrong, check your message, and use `.help <command>` to see needed arguments. Or maybe the developer is just a dumbass")
         elif isinstance(error, commands.MemberNotFound):

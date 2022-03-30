@@ -21,6 +21,7 @@ class Twitter(commands.Cog):
 
     @commands.command(aliases=["tp"])
     async def twitterprofile(self, ctx: commands.Context, user):
+        """Search for a twitter user"""
         try:
             if re.match(r'[0-9]{16,}', user):
                 user = api.get_user(user_id=user)

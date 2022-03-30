@@ -45,7 +45,7 @@ class Reddit(commands.Cog):
         except (prawexceptions.Redirect, prawexceptions.Forbidden, prawexceptions.NotFound):
             error_embed.description = "This subreddit does not exist, or is currently not accessible"
             return await msg.edit(embed=error_embed)
-            
+
         if submission.over_18:
             if ctx.channel.is_nsfw():
                 pass
@@ -78,6 +78,7 @@ class Reddit(commands.Cog):
             final_comment.append(comment)
             continue
         comment_int = random.randint(0,10)
+
         try:
             finished_embed.add_field(name="Comment", value=f"u/{final_comment[comment_int].author} \n{final_comment[comment_int].body} \nUpvotes: {final_comment[comment_int].score}", inline=False)
         except IndexError:

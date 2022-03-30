@@ -49,11 +49,6 @@ class Funny(commands.Cog):
         def_date = def_date.strftime("%B %e, %Y")
 
         definition_ex = x['example']
-
-        if len(definition) > 1024:
-            definition = definition[:1019]+"\n..."
-        if len(definition_ex) > 1024:
-            definition_ex = definition_ex[:1019]+"\n..."
         
         #make clickable ref links in definition
         m_definition = re.findall(
@@ -72,6 +67,11 @@ class Funny(commands.Cog):
         for examp in m_example:
             definition_ex = definition_ex.replace(examp[0],
             f"{examp[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(examp[1])})")
+
+        if len(definition) > 1024:
+            definition = definition[:1019]+"\n..."
+        if len(definition_ex) > 1024:
+            definition_ex = definition_ex[:1019]+"\n..."
 
         embed = discord.Embed(
             title=def_word.capitalize(),

@@ -64,7 +64,7 @@ class Profile(commands.Cog):
                     name="Playing", value=f"**{activity.name}** \n{activity.details} \n{difference} \n{activity.large_image_text}", inline=False)
             if activity.type == discord.ActivityType.listening:
                 embed.add_field(
-                    name="Listening", value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}")
+                    name="Listening", value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}", inline=False)
 
         if status is member.status:
             embed.add_field(name="Status", value=status, inline=False)

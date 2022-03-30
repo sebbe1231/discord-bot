@@ -22,6 +22,7 @@ class Twitter(commands.Cog):
     @commands.command(aliases=["tp"])
     async def twitterprofile(self, ctx: commands.Context, user):
         """Search for a twitter user"""
+        #check if input is valid
         try:
             if re.match(r'[0-9]{16,}', user):
                 user = api.get_user(user_id=user)
@@ -35,7 +36,6 @@ class Twitter(commands.Cog):
             return await ctx.reply("user does not exist")
 
         user_name_id = f"{user.name} (@{user.screen_name})"
-
         if user.verified:
             user_name_id = f"{user.name} :white_check_mark: (@{user.screen_name})"
 
@@ -53,7 +53,9 @@ class Twitter(commands.Cog):
         if user.location:
             twitter_embed.add_field(
                 name="Location", value=user.location, inline=True)
-        if api.user_timeline(user_id=user.id_str) is not None:
+        
+        #add an embed field of users most recent tweets, but only if they have any
+        if len(api.user_timeline(user_id=user.id_str)) > 0:
             recent_tweet = api.user_timeline(
                 user_id=user.id_str, include_rts=False, exclude_replies=True, count=1)
             for tweet in recent_tweet:
@@ -66,9 +68,12 @@ class Twitter(commands.Cog):
             )
             twitter_embed.add_field(
                 name="Most recent Tweet", value=f"{s_text} \n \n:heart: {newest_tweet.favorite_count} \n{str(newest_tweet.created_at)[:-14]}", inline=False)
+        
+        #find acc creation date
         twitter_embed.set_footer(
             text=f"https://twitter.com/{user.screen_name} \nAccount creation date: {str(user.created_at)[:-14]}")
 
+        #send da embed
         await ctx.reply(embed=twitter_embed)
 
 

@@ -1,6 +1,10 @@
 import urllib.parse
 from datetime import datetime
 
+from PIL import Image, ImageFont, ImageDraw, ImageSequence
+import io
+from io import BytesIO
+
 import discord
 import requests
 from discord.ext import commands
@@ -145,6 +149,109 @@ class Funny(commands.Cog):
         embed.add_field(name = "Result:", value = translation.text, inline = False)
 
         await ctx.reply(embed=embed)
+    
+    @commands.command(aliases=["at"])
+    async def addtext(self, ctx: commands.Context, image_link, toptext, bottomtext):
+        """Add top text and or bottom text to a picture, incase top text and bottom text in " " (use image link, also works with discord image links)"""
+        
+        try:
+            r = requests.get(image_link, stream=True)
+            if r.status_code != 200:
+                raise
+            image = Image.open(r.raw)
+        except:
+            return await ctx.reply("Image could not be loaded")
+        
+        FONT = "./impact.ttf"
+        h, w = image.size
+        font_size = round(w/6)
+        font = ImageFont.truetype(FONT, size=font_size)
+
+        finished_embed = discord.Embed(description=f"[Original Image]({image_link})")
+        finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}", icon_url=ctx.message.author.avatar_url_as(static_format='png'))
+
+        while True: 
+            if font.getlength(toptext) >=w or font.getlength(bottomtext) >= w:
+                font_size -= 1
+                print(font_size)
+                font = ImageFont.truetype(FONT, size=font_size)
+            else:
+                if hasattr(image, 'is_animated') and image.is_animated:
+                    frames = []
+                    for frame in ImageSequence.Iterator(image):
+                        d = ImageDraw.Draw(frame)
+                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        del d
+
+                        b = io.BytesIO()
+                        frame.save(b, format="GIF")
+                        frame = Image.open(b)
+
+                        frames.append(frame)
+                    frames[0].save("output.gif", save_all=True, append_images=frames[1:], format="GIF")
+                    return await ctx.reply(file = discord.File("output.gif"))
+
+                draw = ImageDraw.Draw(image)
+                draw.text((h/2, w/20), text=toptext, fill=(255,)*3, anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                draw.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                
+                image.save("output.png")
+            break
+        return await ctx.reply(file = discord.File("output.png"))
+    
+    @commands.command(aliases=["avt", "pfpt", "pt"])
+    async def pfptext(self, ctx: commands.Context, user: discord.User, toptext, bottomtext):
+        """Add top text and or bottom text to a users avatar"""
+        if toptext is None and bottomtext is None:
+            return await ctx.reply("Give me something to add")
+        
+        image = user.avatar_url_as(static_format='png')
+
+        try:
+            r = requests.get(image, stream=True)
+            if r.status_code != 200:
+                raise
+            image = Image.open(r.raw)
+        except:
+            return await ctx.reply("Image could not be loaded")
+
+        FONT = "./impact.ttf"
+        h, w = image.size
+        font_size = round(w/6)
+        font = ImageFont.truetype(FONT, size=font_size)
+
+        while True: 
+            if font.getlength(toptext) >=w or font.getlength(bottomtext) >= w:
+                font_size -= 1
+                print(font_size)
+                font = ImageFont.truetype(FONT, size=font_size)
+            else:
+                if hasattr(image, 'is_animated') and image.is_animated:
+                    frames = []
+                    for frame in ImageSequence.Iterator(image):
+                        d = ImageDraw.Draw(frame)
+                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        del d
+
+                        b = io.BytesIO()
+                        frame.save(b, format="GIF")
+                        frame = Image.open(b)
+
+                        frames.append(frame)
+                    frames[0].save("output.gif", save_all=True, append_images=frames[1:], format="GIF")
+                    return await ctx.reply(file = discord.File("output.gif"))
+
+                draw = ImageDraw.Draw(image)
+                draw.text((h/2, w/20), text=toptext, fill=(255,)*3, anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                draw.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                
+                image.save("output.png")
+            break
+        
+        return await ctx.reply(file = discord.File("output.png"))
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Funny(bot))

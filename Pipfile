@@ -9,6 +9,8 @@ asyncpraw = "*"
 googletrans = "==3.1.0a0"
 tweepy = "*"
 pillow = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 
 [dev-packages]
 autopep8 = "*"

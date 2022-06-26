@@ -1,6 +1,9 @@
 import importlib
-import random
 from os import environ
+import sqlite3
+from requests import Session
+from sqlalchemy.orm import Session
+from database import GuildData, User, Warning, engine
 
 import discord
 from discord.ext import commands
@@ -9,9 +12,13 @@ intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
 
-prefix = "."
-bot = commands.Bot(prefix, intents=intents, help_command=None)
+def get_prefix(bot, ctx:commands.Context):
+    with Session(engine) as session:
+        prefix = session.query(GuildData).filter(GuildData.guild_id == ctx.guild.id).first().bot_prefix
 
+    return prefix
+
+bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
@@ -26,7 +33,10 @@ cogs = [
     "error",
     "reddit",
     "help",
-    "twitter"
+    "twitter",
+    "db",
+    "settings",
+    "check"
 ]
 
 loaded = []

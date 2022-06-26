@@ -12,7 +12,7 @@ class HelpCommand(commands.HelpCommand):
             return c.cog_name or 'No Category'
         entries = await self.filter_commands(bot.commands, sort=True, key=key)
 
-        embed = discord.Embed(title="Help", description="Made by sebbe1231")
+        embed = discord.Embed(title="Help", description=f"Bot made by {bot.get_user(365478245132402689)}")
 
         for cog, command in groupby(entries, key=key):
             if cog == "Help":
@@ -45,7 +45,7 @@ class HelpCommand(commands.HelpCommand):
 
             description = command.short_doc or 'No description'
             cog_embed.add_field(name=f"{command.name.capitalize()}",
-                                value=f"{description} \n``.{command_name}{params}``", inline=False)
+                                value=f"{description} \n``.{command_name}{params}``", inline=True)
 
         await self.context.reply(embed=cog_embed)
 

@@ -1,9 +1,0 @@
-Moderation:
-    Ticket system
-    Add channel for bot announcments to moderation team
-    finish kick and ban
-
-
-Funny:
-    Add gambling database
-    Add gambling funtionality

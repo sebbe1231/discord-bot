@@ -45,7 +45,7 @@ class HelpCommand(commands.HelpCommand):
 
             description = command.short_doc or 'No description'
             cog_embed.add_field(name=f"{command.name.capitalize()}",
-                                value=f"{description} \n``.{command_name}{params}``", inline=True)
+                                value=f"{description} \n``.{command_name}{params}``", inline=False)
 
         await self.context.reply(embed=cog_embed)
 

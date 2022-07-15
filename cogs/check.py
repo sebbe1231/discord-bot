@@ -2,7 +2,7 @@ from discord.ext import commands,tasks
 from datetime import datetime
 from sqlalchemy.orm import Session
 from database import DelMessageLog, GuildData, User, GuildData, Warning, engine
-from sqlalchemy import func, inspect, select
+from sqlalchemy import and_, func, inspect, select
 
 class Check(commands.Cog):
     def __init__ (self, bot: commands.Bot):
@@ -33,7 +33,8 @@ class Check(commands.Cog):
                     add_guild = GuildData(
                         guild_id = guild.id,
                         bot_prefix = ".",
-                        date_modified = datetime.utcnow()
+                        date_modified = datetime.utcnow(),
+                        warn_length = 2630000
                     )
                     session.add(add_guild)
                     session.commit()
@@ -71,7 +72,7 @@ class Check(commands.Cog):
     async def check_warns(self):
         print(f"Looking through warns...: \t{datetime.utcnow()}")
         with Session(engine) as session:
-            print(f"Rows deleted: {session.query(Warning).filter(Warning.expire_date <= datetime.utcnow()).delete()}")
+            print(f"Rows deleted: {session.query(Warning).filter(and_(Warning.expire_date <= datetime.utcnow(), Warning.perma == False)).delete()}")
             session.commit()
     
     @check_warns.before_loop

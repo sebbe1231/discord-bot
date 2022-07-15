@@ -11,6 +11,8 @@ tweepy = "*"
 pillow = "*"
 sqlalchemy = "*"
 psycopg2 = "*"
+"discord.py" = "*"
+humanfriendly = "*"
 
 [dev-packages]
 autopep8 = "*"

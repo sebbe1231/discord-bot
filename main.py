@@ -1,6 +1,5 @@
 import importlib
 from os import environ
-import sqlite3
 from requests import Session
 from sqlalchemy.orm import Session
 from database import GuildData, User, Warning, engine
@@ -11,6 +10,10 @@ from discord.ext import commands
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
+intents.guilds = True
+intents.members = True
+intents.reactions = True
+intents.dm_messages = True
 
 def get_prefix(bot, ctx:commands.Context):
     with Session(engine) as session:
@@ -34,7 +37,6 @@ cogs = [
     "reddit",
     "help",
     "twitter",
-    "db",
     "settings",
     "check"
 ]

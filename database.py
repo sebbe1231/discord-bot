@@ -17,6 +17,7 @@ class User(Base):
     warnings = relationship("Warning", backref="users")
     del_logs = relationship("DelMessageLog", backref="users")
     bans = relationship("GuildUserPunishment", backref="users")
+    user_relations = relationship("UserRelations", backref="users")
 
     UniqueConstraint(user_id)
 
@@ -49,6 +50,7 @@ class GuildData(Base):
     date_modified = Column(DateTime, onupdate=datetime.utcnow())
 
     bans = relationship("GuildUserPunishment", backref="guilddata")
+    user_relations = relationship("UserRelations", backref="guilddata")
 
     UniqueConstraint(guild_id)
 
@@ -73,6 +75,14 @@ class GuildUserPunishment(Base):
     reason = Column(Text)
     duration = Column(String)
     punish_date = Column(DateTime)
+
+class UserRelations(Base):
+    __tablename__="userrelations"
+
+    id = Column(Integer, primary_key = True)
+    user_id = Column(BigInteger, ForeignKey("users.user_id"))
+    guild_id = Column(BigInteger, ForeignKey("guilddata.guild_id"))
+    coins = Column(Integer, default=100)
 
 
 

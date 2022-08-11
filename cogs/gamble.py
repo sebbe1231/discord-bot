@@ -1,8 +1,10 @@
 import asyncio
 import random
+from helpers import db
 
 import discord
 from discord.ext import commands
+from database import UserRelations, engine
 
 
 class Gamble(commands.Cog):
@@ -12,22 +14,20 @@ class Gamble(commands.Cog):
         self.emoji = ":game_die:"
 
     @commands.command(aliases=["dd"])
-    async def ddice(self, ctx: commands.Context, NumDice=None):
-        """Role a dice, with as many faces as you like (No points are involved in this command)"""
-        if NumDice is None:
-            NumDice = 6
-
-        try:
-            result = random.randint(1, int(NumDice))
-        except ValueError:
-            await ctx.reply("say a number >:(")
-
+    async def ddice(self, ctx: commands.Context, guess: int, bet: int):
+        """Role a dice with 6 faces"""
+        result = random.randint(1, 6)
+        
         embed = discord.Embed(title=":game_die: Rolling...",
                               color=discord.Color.purple())
         msg = await ctx.reply(embed=embed)
         await asyncio.sleep(random.randint(1, 3))
-        embed_result = discord.Embed(title=":game_die: you got!:",
-                                     description=result, color=discord.Color.purple())
+        color = discord.Color.red()
+        if result == guess:
+            color = discord.Color.green()
+            
+        embed_result = discord.Embed(title=":game_die: The dice landed!",
+                                     description=f"The dice landed on **{result}**", color=color)
         
         await msg.edit(embed=embed_result)
 
@@ -89,6 +89,11 @@ class Gamble(commands.Cog):
         # needs to be 3x points
         await asyncio.sleep(random.randint(1, 3))
         await msg.edit(embed=embed_result)
+
+    @commands.command()
+    async def losemoney(self, ctx: commands.Context):
+        await ctx.send(ctx.author.id)
+        relation = db.get_user_relation(ctx.author.id, ctx.guild.id)
 
     @commands.command()
     async def coinflip(self, ctx: commands.Context):

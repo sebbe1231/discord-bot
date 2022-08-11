@@ -1,7 +1,7 @@
 from discord.ext import commands,tasks
 from datetime import datetime
 from sqlalchemy.orm import Session
-from database import DelMessageLog, GuildData, User, GuildData, Warning, engine
+from database import DelMessageLog, GuildData, User, GuildData, Warning, UserRelations, engine
 from sqlalchemy import and_, func, inspect, select
 
 class Check(commands.Cog):
@@ -48,6 +48,15 @@ class Check(commands.Cog):
                         add_user = User(
                             user_id = member.id,
                             registered = datetime.utcnow()
+                        )
+                        session.add(add_user)
+                        session.commit()
+                    
+                    data = session.query(UserRelations).filter(and_(UserRelations.user_id == member.id, UserRelations.guild_id == guild.id)).first() is not None
+                    if not data:
+                        add_user = UserRelations(
+                            user_id = member.id,
+                            guild_id = guild.id
                         )
                         session.add(add_user)
                         session.commit()

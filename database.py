@@ -1,7 +1,8 @@
 #from curses import echo
-from datetime import datetime
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Index, Integer, String, DateTime, Text, UniqueConstraint, create_engine, true
-from sqlalchemy.orm import declarative_base, relationship
+from datetime import datetime, timedelta
+from email.policy import default
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Index, Integer, String, DateTime, Text, UniqueConstraint, create_engine, true, and_
+from sqlalchemy.orm import declarative_base, relationship, Session
 from sqlalchemy.sql import func
 from os import environ
 
@@ -12,11 +13,10 @@ class User(Base):
 
     id = Column(Integer, primary_key = True)
     user_id = Column(BigInteger)
-    registered = Column(DateTime())
+    registered = Column(DateTime(), default=datetime.utcnow())
 
     warnings = relationship("Warning", backref="users")
     del_logs = relationship("DelMessageLog", backref="users")
-    bans = relationship("GuildUserPunishment", backref="users")
     user_relations = relationship("UserRelations", backref="users")
 
     UniqueConstraint(user_id)
@@ -31,7 +31,7 @@ class Warning(Base):
     reason = Column(String)
     warned_user_id = Column(BigInteger, ForeignKey("users.user_id"), nullable = False)
     warned_by_user_id = Column(BigInteger)
-    warn_date = Column(DateTime)
+    warn_date = Column(DateTime, default=datetime.utcnow())
     expire_date = Column(DateTime)
     perma = Column(Boolean)
     guild_id = Column(BigInteger)
@@ -44,12 +44,12 @@ class GuildData(Base):
 
     id = Column(Integer, primary_key = True)
     guild_id = Column(BigInteger)
-    bot_prefix = Column(String)
+    bot_prefix = Column(String, default=".")
     mute_role_id = Column(BigInteger)
-    warn_length = Column(BigInteger)
-    date_modified = Column(DateTime, onupdate=datetime.utcnow())
+    warn_length = Column(BigInteger, default = 2630000)
+    date_modified = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
+    bot_audit_id = Column(BigInteger)
 
-    bans = relationship("GuildUserPunishment", backref="guilddata")
     user_relations = relationship("UserRelations", backref="guilddata")
 
     UniqueConstraint(guild_id)
@@ -64,33 +64,36 @@ class DelMessageLog(Base):
     content = Column(Text)
     del_time = Column(DateTime())
 
-class GuildUserPunishment(Base):
-    __tablename__="guilduserpunishments"
-
-    id = Column(Integer, primary_key = True)
-    guild_id = Column(BigInteger, ForeignKey("guilddata.guild_id"))
-    user_id = Column(BigInteger, ForeignKey("users.user_id"))
-    punisher_id = Column(BigInteger)
-    type = Column(String)
-    reason = Column(Text)
-    duration = Column(String)
-    punish_date = Column(DateTime)
-
 class UserRelations(Base):
     __tablename__="userrelations"
 
     id = Column(Integer, primary_key = True)
     user_id = Column(BigInteger, ForeignKey("users.user_id"))
     guild_id = Column(BigInteger, ForeignKey("guilddata.guild_id"))
+    mute_date = Column(DateTime())
+    mute_length = Column(BigInteger)
     coins = Column(Integer, default=100)
 
-
-
-
-
-
-
-
+    def set_coins(self, amount: int):
+        with Session(engine) as session:
+            relation = session.query(UserRelations).get(self.id)
+            relation.coins = amount
+            session.commit()
+    
+    def remove_mute(self):
+        with Session(engine) as session:
+            relation = session.query(UserRelations).get(self.id)
+            relation.mute_date = None
+            relation.mute_length = None
+            session.commit()
+    
+    def add_mute(self, date: datetime, length: int):
+        with Session(engine) as session:
+            relation = session.query(UserRelations).get(self.id)
+            relation.mute_date = date
+            relation.mute_length = length
+            session.commit()
+    
 
 engine = create_engine(environ['DB_KEY'], echo=False, future=true)
 Base.metadata.create_all(engine)

@@ -5,6 +5,8 @@ from helpers import db
 import discord
 from discord.ext import commands
 from database import UserRelations, engine
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
 
 class Gamble(commands.Cog):
@@ -91,14 +93,19 @@ class Gamble(commands.Cog):
         await msg.edit(embed=embed_result)
 
     @commands.command()
-    async def losemoney(self, ctx: commands.Context):
-        await ctx.send(ctx.author.id)
+    async def losemoney(self, ctx: commands.Context, amount: int):
         relation = db.get_user_relation(ctx.author.id, ctx.guild.id)
+
+        relation.set_coins(relation.coins+amount)
 
     @commands.command()
     async def coinflip(self, ctx: commands.Context):
         """Flip a coin, garenteed 50% chance (Still in the works)"""
         pass
+
+    @commands.command()
+    async def bal(self, ctx: commands.Context):
+        await ctx.reply(db.get_user_relation(ctx.author.id, ctx.guild.id).coins)
 
 
 def setup(bot: commands.Bot):

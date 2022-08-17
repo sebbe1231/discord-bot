@@ -38,7 +38,7 @@ cogs = [
     "help",
     "twitter",
     "settings",
-    "check"
+    "startup"
 ]
 
 loaded = []

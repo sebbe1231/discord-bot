@@ -1,3 +1,4 @@
+import string
 import discord
 from discord.ext import commands
 from datetime import datetime, timedelta
@@ -17,7 +18,7 @@ class Settings(commands.Cog):
         return ctx.author == ctx.guild.owner
     
     @commands.command()
-    async def changeprefix(self, ctx: commands.Context, prefix):
+    async def changeprefix(self, ctx: commands.Context, prefix: string):
         with Session(engine) as session:
             prefix_update = session.query(GuildData).filter(GuildData.guild_id == ctx.message.guild.id).first()
             prefix_update.bot_prefix = prefix

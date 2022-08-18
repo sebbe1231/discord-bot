@@ -72,6 +72,8 @@ class UserRelations(Base):
     guild_id = Column(BigInteger, ForeignKey("guilddata.guild_id"))
     mute_date = Column(DateTime())
     mute_length = Column(BigInteger)
+    ban_date = Column(DateTime())
+    ban_length = Column(BigInteger)
     coins = Column(Integer, default=100)
 
     def set_coins(self, amount: int):
@@ -92,6 +94,20 @@ class UserRelations(Base):
             relation = session.query(UserRelations).get(self.id)
             relation.mute_date = date
             relation.mute_length = length
+            session.commit()
+    
+    def remove_ban(self):
+        with Session(engine) as session:
+            relation = session.query(UserRelations).get(self.id)
+            relation.ban_date = None
+            relation.ban_length = None
+            session.commit()
+    
+    def add_ban(self, date: datetime, length: int):
+        with Session(engine) as session:
+            relation = session.query(UserRelations).get(self.id)
+            relation.ban_date = date
+            relation.ban_length = length
             session.commit()
     
 

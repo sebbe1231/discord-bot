@@ -1,29 +1,59 @@
 import asyncio
 import discord
 from discord.ext import commands
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import DateTime, and_
 from sqlalchemy.orm import Session
 from database import DelMessageLog, GuildData, User, Warning, engine
 import humanfriendly
 from helpers import db
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.date import DateTrigger
 
 class Admin(commands.Cog):
     """Commands for admin and admin like perms only"""
     def __init__(self, bot):
         self.bot = bot
         self.emoji = ":shield:"
+        self.schedualar = AsyncIOScheduler(event_loop=bot.loop)
+        self.schedualar.start()
+
+    @staticmethod
+    async def user_unmute(bot, user_id, guild_id, date, length):
+        if db.get_user_relation(user_id, guild_id).mute_date == date and db.get_user_relation(user_id, guild_id).mute_length == length:
+            with Session(engine) as session:
+                db.get_user_relation(user_id, guild_id).remove_mute()
+
+                mute_role = session.query(GuildData.mute_role_id).filter(GuildData.guild_id == guild_id).scalar()
+                await bot.get_guild(guild_id).get_member(user_id).remove_roles(bot.get_guild(guild_id).get_role(int(mute_role)))
+
+                if db.get_guild_data(guild_id).bot_audit_id:
+                    channel = bot.get_guild(guild_id).get_channel(db.get_guild_data(guild_id).bot_audit_id)
+                    await channel.send(f"```{bot.get_user(user_id)} ({user_id}) has been unmuted```")
     
+    @staticmethod
+    async def user_unban(bot, user_id, guild_id, date, length):
+        if db.get_user_relation(user_id, guild_id).ban_date == date and db.get_user_relation(user_id, guild_id).ban_length == length:
+            db.get_user_relation(user_id, guild_id).remove_mute()
+
+            await bot.get_guild(guild_id).unban(bot.get_guild(guild_id).get_member(user_id))
+
+            if db.get_guild_data(guild_id).bot_audit_id:
+                channel = bot.get_guild(guild_id).get_channel(db.get_guild_data(guild_id).bot_audit_id)
+                await channel.send(f"```{bot.get_user(user_id)} ({user_id}) has been unbanned```")
+
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: commands.Context, user: discord.Member, duration=None, *, reason=None):
         """Ban a user. Example of duration 5m = 5 minutes"""
+        date = datetime.utcnow()
         try:
             time = humanfriendly.parse_timespan(duration)
         except humanfriendly.InvalidTimespan:
             reason = duration + " " + reason
             
             #Actual banning process
+            db.get_user_relation(user.id, ctx.guild.id).add_ban(date, -1)
             await ctx.guild.ban(user, reason=reason)
             await ctx.reply(f"{user} has been banned for **unlimited time**. Reason: **{reason}**")
 
@@ -35,23 +65,17 @@ class Admin(commands.Cog):
             return
 
         # Actual banning process
+        db.get_user_relation(user.id, ctx.guild.id).add_ban(date, time)
+        await ctx.guild.ban(user, reason=reason)
+
         await ctx.reply(f"{user} has been banned for **{humanfriendly.format_timespan(time)}**. Reason: **{reason}**")
 
         # bot audit
         if db.get_guild_data(ctx.guild.id).bot_audit_id:
             channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
             await channel.send(f"```{ctx.author} ({ctx.author.id}) has banned {user} ({user.id}) for {humanfriendly.format_timespan(time)} due to \"{reason}\"```")
-        await ctx.guild.ban(user, reason=reason)
-        await asyncio.sleep(time)
-        await ctx.guild.unban(user)
-        await ctx.send(f"{user} has been unbanned")
-
-        # bot audit
-        if db.get_guild_data(ctx.guild.id).bot_audit_id:
-            channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
-            await channel.send(f"```{user} ({user.id}) has been auto-unbanned due to ban expiration```")
-
         
+        self.schedualar.add_job(Admin.user_unmute, DateTrigger(date+timedelta(seconds=time), timezone=timezone.utc), (self.bot, user.id, ctx.guild.id, date, time))
     
     @commands.command()
     @commands.has_permissions(ban_members=True)
@@ -86,7 +110,10 @@ class Admin(commands.Cog):
         date = datetime.utcnow()
         with Session(engine) as session:
             mute_role = session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar()
-            role = ctx.guild.get_role(int(mute_role))
+            try:
+                role = ctx.guild.get_role(int(mute_role))
+            except TypeError:
+                return await ctx.reply(f"No mute role added to database. To add this do `{ctx.prefix}muterole <mute_id>`")
 
         try:
             time = humanfriendly.parse_timespan(duration)
@@ -106,31 +133,19 @@ class Admin(commands.Cog):
                 await channel.send(f"```{ctx.author} ({ctx.author.id}) has muted {user} ({user.id}) for unlimited time due to \"{reason}\"```")
             return
         
-        await ctx.reply(f"{user} has been muted for **{humanfriendly.format_timespan(time)}**. Reason: **{reason}**")
-
-        
         db.get_user_relation(user.id, ctx.guild.id).remove_mute()
         db.get_user_relation(user.id, ctx.guild.id).add_mute(date, time)
+        
+        await user.add_roles(role)
 
+        await ctx.reply(f"{user} has been muted for **{humanfriendly.format_timespan(time)}**. Reason: **{reason}**")
+        
         # bot audit
         if db.get_guild_data(ctx.guild.id).bot_audit_id:
             channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
             await channel.send(f"```{ctx.author} ({ctx.author.id}) has muted {user} ({user.id}) for {humanfriendly.format_timespan(time)} due to \"{reason}\"```")
         
-        await user.add_roles(role)
-        await asyncio.sleep(time)
-        if db.get_user_relation(user.id, ctx.guild.id).mute_date == date and db.get_user_relation(user.id, ctx.guild.id).mute_length == time:
-            await user.remove_roles(role)
-            await ctx.send(f"{user} has been unmuted")
-            db.get_user_relation(user.id, ctx.guild.id).remove_mute()
-        else:
-            return
-
-        # bot audit
-        if db.get_guild_data(ctx.guild.id).bot_audit_id:
-            channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
-            await channel.send(f"```{user} ({user.id}) has been auto-unmuted due to mute expiration```")
-
+        self.schedualar.add_job(Admin.user_unmute, DateTrigger(date+timedelta(seconds=time), timezone=timezone.utc), (self.bot, user.id, ctx.guild.id, date, time))
         
 
     @commands.command(aliases = ["um"])
@@ -141,9 +156,9 @@ class Admin(commands.Cog):
         role = ctx.guild.get_role(int(mute_role))
 
         await user.remove_roles(role)
-        await ctx.reply(f"{user} has been unmuted")
-
         db.get_user_relation(user.id, ctx.guild.id).remove_mute()
+
+        await ctx.reply(f"{user} has been unmuted")
 
         # bot audit
         if db.get_guild_data(ctx.guild.id).bot_audit_id:
@@ -154,7 +169,6 @@ class Admin(commands.Cog):
     @commands.has_permissions(manage_roles=True)
     async def warn(self, ctx: commands.Context, user: discord.Member, perma: bool, *, reason):
         """warn a user. Perma: True/False"""
-        current_time = datetime.utcnow()
         db.add_warn(reason, user.id, ctx.author.id, perma, ctx.guild.id)
         
         await ctx.reply("User has been warned")

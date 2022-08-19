@@ -12,7 +12,7 @@ class User(Base):
     user_id = Column(BigInteger)
     registered = Column(DateTime(), default=datetime.utcnow())
 
-    UserWarnings = relationship("UserWarning", backref="users")
+    UserWarnings = relationship("UserWarnings", backref="users")
     del_logs = relationship("DelMessageLog", backref="users")
     user_relations = relationship("UserRelations", backref="users")
 
@@ -34,7 +34,7 @@ class UserWarnings(Base):
     guild_id = Column(BigInteger)
 
     def __repr__(self):
-        return f"UserWarning(id={self.id!r}, reason={self.reason!r}, warned_user_id={self.warned_user_id!r}, warned_by_user_id={self.warned_by_user_id!r})"
+        return f"UserWarnings(id={self.id!r}, reason={self.reason!r}, warned_user_id={self.warned_user_id!r}, warned_by_user_id={self.warned_by_user_id!r})"
 
 class GuildData(Base):
     __tablename__ = "guilddata"

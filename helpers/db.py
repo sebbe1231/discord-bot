@@ -1,4 +1,4 @@
-from database import engine, User, UserRelations, UserWarning, GuildData
+from database import User, UserRelations, UserWarnings, GuildData, engine
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from datetime import datetime, timedelta
@@ -32,22 +32,22 @@ def get_user_relation(user_id: int, guild_id: int) -> UserRelations:
         
         return user_relation
 
-def get_user_warns(user_id: int, guild_id: int) -> UserWarning:
+def get_user_warns(user_id: int, guild_id: int) -> UserWarnings:
     get_user(user_id)
     with Session(engine) as session:
-        user_warns = session.query(UserWarning).filter(and_(UserWarning.warned_user_id == user_id, UserWarning.guild_id == guild_id)).all()
+        user_warns = session.query(UserWarnings).filter(and_(UserWarnings.warned_user_id == user_id, UserWarnings.guild_id == guild_id)).all()
 
         return user_warns
 
 def delete_warn(warn_id: int) -> None:
     with Session(engine) as session:
-        session.query(UserWarning).filter(UserWarning.id == warn_id).delete()
+        session.query(UserWarnings).filter(UserWarnings.id == warn_id).delete()
         session.commit()
     
 def add_warn(reason, user_id, warner_id, perma, guild_id) -> None:
     get_user(user_id)
     with Session(engine) as session:
-        add_warn = UserWarning(
+        add_warn = UserWarnings(
             reason=reason,
             warned_user_id=user_id,
             warned_by_user_id=warner_id,

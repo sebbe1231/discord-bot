@@ -1,7 +1,7 @@
 from discord.ext import commands,tasks
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from database import DelMessageLog, GuildData, UserWarning, UserRelations, engine
+from database import DelMessageLog, GuildData, UserWarnings, UserRelations, engine
 from sqlalchemy import and_
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
@@ -101,7 +101,7 @@ class Startup(commands.Cog):
     async def check_warns(self):
         print(f"Looking through warns...: \t{datetime.utcnow()}")
         with Session(engine) as session:
-            print(f"Rows deleted: {session.query(UserWarning).filter(and_(UserWarning.expire_date <= datetime.utcnow(), UserWarning.perma == False)).delete()}")
+            print(f"Rows deleted: {session.query(UserWarnings).filter(and_(UserWarnings.expire_date <= datetime.utcnow(), UserWarnings.perma == False)).delete()}")
             session.commit()
     
     @check_warns.before_loop

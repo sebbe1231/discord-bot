@@ -24,7 +24,6 @@ class Funny(commands.Cog):
         await ctx.message.delete()
         if user is None:
             return await ctx.send("https://tenor.com/view/foss-no-bitches-no-hoes-0bitches-no-gif-24529727")
-        
         await ctx.send(f"{user.mention}\nhttps://tenor.com/view/foss-no-bitches-no-hoes-0bitches-no-gif-24529727")
 
     @commands.command(aliases=['urban', 'ud'])
@@ -58,7 +57,7 @@ class Funny(commands.Cog):
             definition
         )
         for defi in m_definition:
-            definition = definition.replace(defi[0], 
+            definition = definition.replace(defi[0],
                 f"{defi[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(defi[1])})"
             )
         #make clickable ref links in example
@@ -163,10 +162,10 @@ class Funny(commands.Cog):
         font = ImageFont.truetype(FONT, size=font_size)
 
         finished_embed = discord.Embed(description=f"[Original Image]({image_link})")
-        finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}", 
+        finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}",
             icon_url=ctx.message.author.avatar_url_as(static_format='png')
         )
-        while True: 
+        while True:
             if font.getlength(toptext) >=w or font.getlength(bottomtext) >= w:
                 font_size -= 1
                 print(font_size)
@@ -176,12 +175,12 @@ class Funny(commands.Cog):
                     frames = []
                     for frame in ImageSequence.Iterator(image):
                         d = ImageDraw.Draw(frame)
-                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), 
-                            anchor="mt", font=font, stroke_fill=(0, 0, 0), 
+                        d.text((h/2, w/20), text=toptext, fill=(255,255,255),
+                            anchor="mt", font=font, stroke_fill=(0, 0, 0),
                             stroke_width=round(0.05*font_size)
                         )
-                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, 
-                            anchor="ms", font=font, stroke_fill=(0, 0, 0), 
+                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3,
+                            anchor="ms", font=font, stroke_fill=(0, 0, 0),
                             stroke_width=round(0.05*font_size)
                         )
                         del d
@@ -228,8 +227,10 @@ class Funny(commands.Cog):
                     frames = []
                     for frame in ImageSequence.Iterator(image):
                         d = ImageDraw.Draw(frame)
-                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
-                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt",
+                            font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms",
+                            font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
                         del d
 
                         b = io.BytesIO()

@@ -12,7 +12,7 @@ keywords2 = [
 class Detection(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+ 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.id == self.bot.user.id:

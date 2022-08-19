@@ -67,10 +67,10 @@ class Twitter(commands.Cog):
                     newest_tweet.text
                 )
                 twitter_embed.add_field(
-                    name="Most recent Tweet", value=f"{s_text} \n \n:heart: {newest_tweet.favorite_count} \n{str(newest_tweet.created_at)[:-14]}", inline=False)
+                    name="Most recent Tweet", value=f"{s_text} \n \n:heart: {newest_tweet.favorite_count} \n{str(newest_tweet.created_at)[:-14]}",
+                        inline=False)
             except UnboundLocalError:
                 pass
-        
         #find acc creation date
         twitter_embed.set_footer(
             text=f"https://twitter.com/{user.screen_name} \nAccount creation date: {str(user.created_at)[:-14]}")

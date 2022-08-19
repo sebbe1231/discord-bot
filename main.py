@@ -20,6 +20,7 @@ def get_prefix(bot, ctx:commands.Context):
 
     return prefix
 
+
 bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
 
 

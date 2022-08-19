@@ -9,7 +9,7 @@ class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = ":gear:"
-    
+
     async def cog_check(self, ctx: commands.Context):
         return ctx.author == ctx.guild.owner
     
@@ -53,7 +53,7 @@ class Settings(commands.Cog):
             mute_update.mute_role_id = mute_id
             session.commit()
                         
-            await ctx.reply(f"{mute_role} is now the role that users get in relation to the mute command")   
+            await ctx.reply(f"{mute_role} is now the role that users get in relation to the mute command")
 
     @commands.command()
     async def warnduration(self, ctx: commands.Context, duration):
@@ -76,11 +76,11 @@ class Settings(commands.Cog):
         with Session(engine) as session:
             embed = discord.Embed(title=f"Data for: {ctx.message.guild}")
             embed.add_field(name="Bot prefix", value=f"{session.query(GuildData.bot_prefix).filter(GuildData.guild_id == ctx.message.guild.id).scalar()}")
-            embed.add_field(name="Mute role", value=f"""{discord.utils.get(ctx.message.guild.roles, 
+            embed.add_field(name="Mute role", value=f"""{discord.utils.get(ctx.message.guild.roles,
                 id=session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar())} 
                 ({session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar()})"""
             )
-            embed.add_field(name="Warn duration", 
+            embed.add_field(name="Warn duration",
                 value=f"{humanfriendly.format_timespan(session.query(GuildData.warn_length).filter(GuildData.guild_id == ctx.message.guild.id).scalar())}"
             )
 

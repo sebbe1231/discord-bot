@@ -8,7 +8,7 @@ class Profile(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.emoji = ":man:"
-    
+
     @commands.command(aliases=["av"])
     async def avatar(self, ctx: commands.Context, user: discord.User = None):
         """Get the avatar of a given user (Works for users not in the server too)"""
@@ -63,8 +63,8 @@ class Profile(commands.Cog):
                     name="Playing", value=f"**{activity.name}** \n{activity.details} \n{difference} \n{activity.large_image_text}", inline=False)
             if activity.type == discord.ActivityType.listening:
                 embed.add_field(
-                    name="Listening", 
-                    value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}", 
+                    name="Listening",
+                    value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}",
                     inline=False
                 )
 

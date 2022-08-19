@@ -12,7 +12,7 @@ class User(Base):
     user_id = Column(BigInteger)
     registered = Column(DateTime(), default=datetime.utcnow())
 
-    warnings = relationship("Warning", backref="users")
+    UserWarnings = relationship("UserWarning", backref="users")
     del_logs = relationship("DelMessageLog", backref="users")
     user_relations = relationship("UserRelations", backref="users")
 
@@ -21,8 +21,8 @@ class User(Base):
     def __repr__(self):
         return f"User(id={self.id!r}, user_id={self.user_id!r}, username={self.username!r})"
 
-class Warning(Base):
-    __tablename__ = "warnings"
+class UserWarnings(Base):
+    __tablename__ = "userwarnings"
 
     id = Column(Integer, primary_key = True)
     reason = Column(String)
@@ -34,7 +34,7 @@ class Warning(Base):
     guild_id = Column(BigInteger)
 
     def __repr__(self):
-        return f"Warning(id={self.id!r}, reason={self.reason!r}, warned_user_id={self.warned_user_id!r}, warned_by_user_id={self.warned_by_user_id!r})"
+        return f"UserWarning(id={self.id!r}, reason={self.reason!r}, warned_user_id={self.warned_user_id!r}, warned_by_user_id={self.warned_by_user_id!r})"
 
 class GuildData(Base):
     __tablename__ = "guilddata"
@@ -78,7 +78,7 @@ class UserRelations(Base):
             relation = session.query(UserRelations).get(self.id)
             relation.coins = amount
             session.commit()
-    
+
     def remove_mute(self):
         with Session(engine) as session:
             relation = session.query(UserRelations).get(self.id)

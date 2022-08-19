@@ -15,7 +15,6 @@ class Gamble(commands.Cog):
     async def ddice(self, ctx: commands.Context, guess: int, bet: int):
         """Role a dice with 6 faces"""
         result = random.randint(1, 6)
-        
         embed = discord.Embed(title=":game_die: Rolling...",
                               color=discord.Color.purple())
         msg = await ctx.reply(embed=embed)

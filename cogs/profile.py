@@ -1,4 +1,3 @@
-from cProfile import Profile
 import discord
 from discord.ext import commands
 from datetime import datetime

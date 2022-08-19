@@ -1,5 +1,4 @@
 from database import engine, User, UserRelations, Warning, GuildData
-from typing import Union
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from datetime import datetime, timedelta

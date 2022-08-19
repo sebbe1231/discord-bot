@@ -1,12 +1,8 @@
-import string
 import discord
 from discord.ext import commands
-from datetime import datetime, timedelta
 import humanfriendly
-from psycopg2 import DataError
-import sqlalchemy
 from sqlalchemy.orm import Session
-from database import DelMessageLog, User, GuildData, Warning, engine
+from database import GuildData, engine
 
 class Settings(commands.Cog):
     """Server settings for the bot (Owner only)"""

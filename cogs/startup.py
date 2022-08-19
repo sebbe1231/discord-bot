@@ -1,8 +1,8 @@
 from discord.ext import commands,tasks
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from database import DelMessageLog, GuildData, User, GuildData, Warning, UserRelations, engine
-from sqlalchemy import and_, func, inspect, select
+from database import DelMessageLog, GuildData, GuildData, Warning, UserRelations, engine
+from sqlalchemy import and_
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
 from .admin import Admin

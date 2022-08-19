@@ -4,10 +4,6 @@ from helpers import db
 
 import discord
 from discord.ext import commands
-from database import UserRelations, engine
-from sqlalchemy import and_
-from sqlalchemy.orm import Session
-
 
 class Gamble(commands.Cog):
     """Commands for your gambling needs (STILL IN THE WORKS, im lazy)"""

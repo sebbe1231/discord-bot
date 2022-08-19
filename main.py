@@ -2,7 +2,7 @@ import importlib
 from os import environ
 from requests import Session
 from sqlalchemy.orm import Session
-from database import GuildData, User, Warning, engine
+from database import GuildData, engine
 
 import discord
 from discord.ext import commands

@@ -1,9 +1,6 @@
-#from curses import echo
-from datetime import datetime, timedelta
-from email.policy import default
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Index, Integer, String, DateTime, Text, UniqueConstraint, create_engine, true, and_
+from datetime import datetime
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, DateTime, Text, UniqueConstraint, create_engine, true
 from sqlalchemy.orm import declarative_base, relationship, Session
-from sqlalchemy.sql import func
 from os import environ
 
 Base = declarative_base()

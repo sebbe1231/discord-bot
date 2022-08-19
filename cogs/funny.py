@@ -3,7 +3,6 @@ from datetime import datetime
 
 from PIL import Image, ImageFont, ImageDraw, ImageSequence
 import io
-from io import BytesIO
 
 import discord
 import requests
@@ -23,7 +22,6 @@ class Funny(commands.Cog):
     async def bitches(self, ctx: commands.Context, user: discord.User = None):
         """no bitches?"""
         await ctx.message.delete()
-        
         if user is None:
             return await ctx.send("https://tenor.com/view/foss-no-bitches-no-hoes-0bitches-no-gif-24529727")
         
@@ -39,7 +37,7 @@ class Funny(commands.Cog):
 
             x = r.json()['list'][0]
         except IndexError:
-            return await ctx.reply(f"There is no deffinition for that term")
+            return await ctx.reply("There is no deffinition for that term")
 
         definition = x['definition']
         definition_link = x['permalink']
@@ -62,7 +60,6 @@ class Funny(commands.Cog):
         for defi in m_definition:
             definition = definition.replace(defi[0], 
             f"{defi[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(defi[1])})")
-
         #make clickable ref links in example
         m_example = re.findall(
             r"(\[(.*?)\])",
@@ -102,7 +99,7 @@ class Funny(commands.Cog):
             translator = Translator()
             translation = translator.translate(text=str(text), dest=language)
         except ValueError:
-            return await ctx.reply(f"That is not a valid language option")
+            return await ctx.reply("That is not a valid language option")
         #await ctx.reply(translation.text)
         source = translation.src
         output = translation.dest
@@ -154,13 +151,10 @@ class Funny(commands.Cog):
     async def addtext(self, ctx: commands.Context, image_link, toptext, bottomtext):
         """Add top text and or bottom text to a picture, incase top text and bottom text in " " (use image link, also works with discord image links)"""
         
-        try:
-            r = requests.get(image_link, stream=True)
-            if r.status_code != 200:
-                raise
-            image = Image.open(r.raw)
-        except:
+        r = requests.get(image_link, stream=True)
+        if r.status_code != 200:
             return await ctx.reply("Image could not be loaded")
+        image = Image.open(r.raw)
         
         FONT = "./impact.ttf"
         h, w = image.size
@@ -169,7 +163,6 @@ class Funny(commands.Cog):
 
         finished_embed = discord.Embed(description=f"[Original Image]({image_link})")
         finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}", icon_url=ctx.message.author.avatar_url_as(static_format='png'))
-
         while True: 
             if font.getlength(toptext) >=w or font.getlength(bottomtext) >= w:
                 font_size -= 1
@@ -183,15 +176,12 @@ class Funny(commands.Cog):
                         d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
                         d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
                         del d
-
                         b = io.BytesIO()
                         frame.save(b, format="GIF")
                         frame = Image.open(b)
-
                         frames.append(frame)
                     frames[0].save("output.gif", save_all=True, append_images=frames[1:], format="GIF")
                     return await ctx.reply(file = discord.File("output.gif"))
-
                 draw = ImageDraw.Draw(image)
                 draw.text((h/2, w/20), text=toptext, fill=(255,)*3, anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
                 draw.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))

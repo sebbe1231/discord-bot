@@ -1,10 +1,8 @@
-import asyncio
 import discord
 from discord.ext import commands
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import DateTime, and_
 from sqlalchemy.orm import Session
-from database import DelMessageLog, GuildData, User, Warning, engine
+from database import DelMessageLog, GuildData, engine
 import humanfriendly
 from helpers import db
 from apscheduler.schedulers.asyncio import AsyncIOScheduler

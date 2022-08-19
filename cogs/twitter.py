@@ -61,13 +61,16 @@ class Twitter(commands.Cog):
             for tweet in recent_tweet:
                 newest_tweet = tweet
 
-            s_text = re.sub(
-                r"(@([A-Za-z0-9_]{4,15}))",
-                r"[\1](https://twitter.com/\2)",
-                newest_tweet.text
-            )
-            twitter_embed.add_field(
-                name="Most recent Tweet", value=f"{s_text} \n \n:heart: {newest_tweet.favorite_count} \n{str(newest_tweet.created_at)[:-14]}", inline=False)
+            try:
+                s_text = re.sub(
+                    r"(@([A-Za-z0-9_]{4,15}))",
+                    r"[\1](https://twitter.com/\2)",
+                    newest_tweet.text
+                )
+                twitter_embed.add_field(
+                    name="Most recent Tweet", value=f"{s_text} \n \n:heart: {newest_tweet.favorite_count} \n{str(newest_tweet.created_at)[:-14]}", inline=False)
+            except UnboundLocalError:
+                pass
         
         #find acc creation date
         twitter_embed.set_footer(

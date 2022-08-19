@@ -23,7 +23,7 @@ class HelpCommand(commands.HelpCommand):
             emoji = actual_cog.emoji
 
             content = [description]
-            content.append(f'`.help {cog}`')
+            content.append(f'`{self.context.prefix}help {cog}`')
 
             embed.add_field(name=f"{emoji} {cog}", value="\n".join(content))
 
@@ -45,7 +45,7 @@ class HelpCommand(commands.HelpCommand):
 
             description = command.short_doc or 'No description'
             cog_embed.add_field(name=f"{command.name.capitalize()}",
-                                value=f"{description} \n``.{command_name}{params}``", inline=False)
+                                value=f"{description} \n``{self.context.prefix}{command_name}{params}``", inline=False)
 
         await self.context.reply(embed=cog_embed)
 
@@ -63,7 +63,7 @@ class HelpCommand(commands.HelpCommand):
             title=f"{command.name.capitalize()}", description=f"{command.short_doc}")
         command_embed.set_author(name=f"{command.cog.qualified_name}")
         command_embed.add_field(
-            name="Usage", value=f"``.{command_name}{params}``")
+            name="Usage", value=f"``{self.context.prefix}{command_name}{params}``")
 
         msg = None
         if error:

@@ -18,11 +18,13 @@ class Settings(commands.Cog):
         return ctx.author == ctx.guild.owner
     
     @commands.command()
-    async def changeprefix(self, ctx: commands.Context, prefix: string):
+    async def changeprefix(self, ctx: commands.Context, prefix):
         with Session(engine) as session:
             prefix_update = session.query(GuildData).filter(GuildData.guild_id == ctx.message.guild.id).first()
-            prefix_update.bot_prefix = prefix
+            prefix_update.bot_prefix = str(prefix)
             session.commit()
+        
+        await ctx.reply("Prefix has been changed!")
     
     @commands.command()
     async def roleperms(self, ctx:commands.Context):

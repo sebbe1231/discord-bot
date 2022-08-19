@@ -6,14 +6,15 @@ from sqlalchemy import and_, func, inspect, select
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
 from .admin import Admin
+from helpers import db
 
 class Startup(commands.Cog):
     def __init__ (self, bot: commands.Bot):
         self.bot = bot
         self.check_warns.start()
+        self.del_messeges.start()
         self.schedualar = AsyncIOScheduler(event_loop=bot.loop)
         self.schedualar.start()
-        
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -44,12 +45,11 @@ class Startup(commands.Cog):
             for guild in self.bot.guilds:
                 data = session.query(GuildData).filter_by(guild_id = guild.id).first() is not None
                 if not data:
-                    if not data:
-                        add_guild = GuildData(
-                            guild_id = guild.id,
-                        )
-            session.add(add_guild)
-            session.commit()
+                    add_guild = GuildData(
+                        guild_id = guild.id,
+                    )
+                    session.add(add_guild)
+                    session.commit()
 
 
     @commands.Cog.listener()
@@ -63,20 +63,34 @@ class Startup(commands.Cog):
                 )
             session.add(add_guild)
             session.commit()
-
     
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        ping = f"<@{self.bot.user.id}>"
+        if ping in message.content:
+            await message.reply(f"Hiya! Use the command `{await self.bot.get_prefix(message)}help` to get started!")
+
         
     @commands.Cog.listener()
     async def on_message_delete(self, message):
+        db.get_user(message.author.id)
+        date = datetime.utcnow()
         with Session(engine) as session:
             add_message = DelMessageLog(
                 guild_id = message.guild.id,
                 channel_id = message.channel.id,
                 user_id = message.author.id,
                 content = message.content,
-                del_time = datetime.utcnow()
+                del_time = date
             )
             session.add(add_message)
+            session.commit()
+    
+    @tasks.loop(hours=24)
+    async def del_messeges(self):
+        with Session(engine) as session:
+            print("Clearing all deleted messages...")
+            print(f"Messages deleted: {session.query(DelMessageLog).delete()}")
             session.commit()
 
     @tasks.loop(minutes=1.0)

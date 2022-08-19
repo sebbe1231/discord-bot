@@ -211,7 +211,11 @@ class Admin(commands.Cog):
             msgs = session.query(DelMessageLog).filter(DelMessageLog.guild_id == ctx.message.guild.id)
         fmsg = "All deleted messages for server:"
         for msg in msgs:
-            fmsg = fmsg + f"\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} in {ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}"
+            if len(fmsg) + len(f"\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} in #{ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}") > 2000:
+                await ctx.reply(f"```{fmsg}```")
+                fmsg = ""
+            else:
+                fmsg = fmsg + f"\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} in #{ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}"
         await ctx.reply(f"```{fmsg}```")
 
 

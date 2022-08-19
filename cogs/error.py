@@ -24,8 +24,8 @@ class Error(commands.Cog):
             return await ctx.reply("Member not found")
         elif isinstance(error, commands.BadBoolArgument):
             return await ctx.reply("Not a valid bool value")
-        elif isinstance(error, commands.BadArgument):
-            return await ctx.reply("Wrong value type")
+        # elif isinstance(error, commands.BadArgument):
+        #     return await ctx.reply("Wrong value type")
             
 
         raise error

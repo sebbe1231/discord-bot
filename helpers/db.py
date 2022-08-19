@@ -20,6 +20,14 @@ def get_user(discord_id: int) -> User:
 def get_user_relation(user_id: int, guild_id: int) -> UserRelations:
     get_user(user_id)
     with Session(engine) as session:
+        if session.query(UserRelations).filter(and_(UserRelations.user_id == user_id, UserRelations.guild_id == guild_id)).first() is None:
+            add_relation = UserRelations(
+                user_id = user_id,
+                guild_id = guild_id
+            )
+            session.add(add_relation)
+            session.commit()
+
         user_relation = session.query(UserRelations).filter(
             and_(UserRelations.user_id == user_id, UserRelations.guild_id == guild_id)
         ).first()

@@ -101,7 +101,10 @@ class Startup(commands.Cog):
     async def check_warns(self):
         print(f"Looking through warns...: \t{datetime.utcnow()}")
         with Session(engine) as session:
-            print(f"Rows deleted: {session.query(UserWarnings).filter(and_(UserWarnings.expire_date <= datetime.utcnow(), UserWarnings.perma == False)).delete()}")
+            print(
+                f"""Rows deleted: 
+                {session.query(UserWarnings).filter(and_(UserWarnings.expire_date <= datetime.utcnow(), UserWarnings.perma == False)).delete()}"""
+            )
             session.commit()
     
     @check_warns.before_loop

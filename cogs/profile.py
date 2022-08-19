@@ -63,7 +63,10 @@ class Profile(commands.Cog):
                     name="Playing", value=f"**{activity.name}** \n{activity.details} \n{difference} \n{activity.large_image_text}", inline=False)
             if activity.type == discord.ActivityType.listening:
                 embed.add_field(
-                    name="Listening", value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}", inline=False)
+                    name="Listening", 
+                    value=f"**{activity.name}** \nArtist: {activity.artist} \nSong: {activity.title} \nDuration: {str(activity.duration)[:-7]}", 
+                    inline=False
+                )
 
         if status is member.status:
             embed.add_field(name="Status", value=status, inline=False)
@@ -72,7 +75,7 @@ class Profile(commands.Cog):
         embed.add_field(name="Join server date",
                         value=joined_date, inline=True)
 
-        if member.bot == True:
+        if member.bot:
             embed.set_footer(text="THIS IS A BOT")
 
         await ctx.reply(embed=embed)

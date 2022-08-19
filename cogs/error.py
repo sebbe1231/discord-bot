@@ -18,15 +18,13 @@ class Error(commands.Cog):
             help_command.context = ctx
             return await help_command.send_command_help(ctx.command, True)
         elif isinstance(error, commands.CommandInvokeError):
-            await ctx.reply(f"Hmmm something went wrong, check your message, and use {ctx.prefix}`help <command>` to see needed arguments. Or maybe the developer is just a dumbass")
+            await ctx.reply(f"""Hmmm something went wrong, check your message, 
+                and use {ctx.prefix}`help <command>` to see needed arguments. 
+                Or maybe the developer is just a dumbass""")
         elif isinstance(error, commands.MemberNotFound):
             return await ctx.reply("Member not found")
         elif isinstance(error, commands.BadBoolArgument):
             return await ctx.reply("Not a valid bool value")
-        # elif isinstance(error, commands.BadArgument):
-        #     return await ctx.reply("Wrong value type")
-            
-
         raise error
 
 def setup(bot: commands.Bot):

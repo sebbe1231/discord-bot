@@ -1,7 +1,7 @@
 from discord.ext import commands,tasks
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from database import DelMessageLog, GuildData, GuildData, Warning, UserRelations, engine
+from database import DelMessageLog, GuildData, Warning, UserRelations, engine
 from sqlalchemy import and_
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
@@ -18,14 +18,16 @@ class Startup(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"Bot startup process...")
+        print("Bot startup process...")
         with Session(engine) as session:
             for user in session.query(UserRelations).filter(and_(UserRelations.mute_date is not None, UserRelations.mute_length is not None)):
                 if user.mute_length == -1 or user.mute_length is None:
                     continue
                 exp = user.mute_date + timedelta(seconds=user.mute_length)
                 if exp > datetime.utcnow():
-                    self.schedualar.add_job(Admin.user_unmute, DateTrigger(exp, timezone=timezone.utc), (self.bot, user.user_id, user.guild_id, user.mute_date, user.mute_length))
+                    self.schedualar.add_job(Admin.user_unmute, DateTrigger(exp, timezone=timezone.utc), 
+                        (self.bot, user.user_id, user.guild_id, user.mute_date, user.mute_length)
+                    )
                 elif exp <= datetime.utcnow():
                     await Admin.user_unmute(self.bot, user.user_id, user.guild_id, user.mute_date, user.mute_length)
             
@@ -36,7 +38,9 @@ class Startup(commands.Cog):
                     continue
                 exp = user.ban_date + timedelta(seconds=user.ban_length)
                 if exp > datetime.utcnow():
-                    self.schedualar.add_job(Admin.user_unban, DateTrigger(exp, timezone=timezone.utc), (self.bot, user.user_id, user.guild_id, user.ban_date, user.ban_length))
+                    self.schedualar.add_job(Admin.user_unban, DateTrigger(exp, timezone=timezone.utc), 
+                        (self.bot, user.user_id, user.guild_id, user.ban_date, user.ban_length)
+                    )
                 elif exp <= datetime.utcnow():
                     await Admin.user_unban(self.bot, user.user_id, user.guild_id, user.ban_date, user.ban_length)
             

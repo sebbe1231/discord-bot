@@ -15,7 +15,6 @@ def get_user(discord_id: int) -> User:
         user = session.query(User).filter(User.user_id == discord_id).first()
         return user
         
-
 def get_user_relation(user_id: int, guild_id: int) -> UserRelations:
     get_user(user_id)
     with Session(engine) as session:

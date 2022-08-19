@@ -1,6 +1,5 @@
 import importlib
 from os import environ
-from requests import Session
 from sqlalchemy.orm import Session
 from database import GuildData, engine
 
@@ -22,6 +21,7 @@ def get_prefix(bot, ctx:commands.Context):
     return prefix
 
 bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
+
 
 @bot.event
 async def on_ready():

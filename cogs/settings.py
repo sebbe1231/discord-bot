@@ -76,8 +76,13 @@ class Settings(commands.Cog):
         with Session(engine) as session:
             embed = discord.Embed(title=f"Data for: {ctx.message.guild}")
             embed.add_field(name="Bot prefix", value=f"{session.query(GuildData.bot_prefix).filter(GuildData.guild_id == ctx.message.guild.id).scalar()}")
-            embed.add_field(name="Mute role", value=f"{discord.utils.get(ctx.message.guild.roles, id=session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar())} ({session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar()})")
-            embed.add_field(name="Warn duration", value=f"{humanfriendly.format_timespan(session.query(GuildData.warn_length).filter(GuildData.guild_id == ctx.message.guild.id).scalar())}")
+            embed.add_field(name="Mute role", value=f"""{discord.utils.get(ctx.message.guild.roles, 
+                id=session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar())} 
+                ({session.query(GuildData.mute_role_id).filter(GuildData.guild_id == ctx.message.guild.id).scalar()})"""
+            )
+            embed.add_field(name="Warn duration", 
+                value=f"{humanfriendly.format_timespan(session.query(GuildData.warn_length).filter(GuildData.guild_id == ctx.message.guild.id).scalar())}"
+            )
 
         await ctx.reply(embed=embed)
 

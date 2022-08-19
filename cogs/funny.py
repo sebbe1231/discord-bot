@@ -59,7 +59,8 @@ class Funny(commands.Cog):
         )
         for defi in m_definition:
             definition = definition.replace(defi[0], 
-            f"{defi[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(defi[1])})")
+                f"{defi[0]}(https://www.urbandictionary.com/define.php?term={urllib.parse.quote(defi[1])})"
+            )
         #make clickable ref links in example
         m_example = re.findall(
             r"(\[(.*?)\])",
@@ -129,7 +130,7 @@ class Funny(commands.Cog):
             translator = Translator()
             translation = translator.translate(text=str(text), dest=language_dest, src=language_src)
         except ValueError:
-            return await ctx.reply(f"That is not a valid language option")
+            return await ctx.reply("That is not a valid language option")
         
         source = translation.src
         output = translation.dest
@@ -162,7 +163,9 @@ class Funny(commands.Cog):
         font = ImageFont.truetype(FONT, size=font_size)
 
         finished_embed = discord.Embed(description=f"[Original Image]({image_link})")
-        finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}", icon_url=ctx.message.author.avatar_url_as(static_format='png'))
+        finished_embed.set_author(name=f"Requested by {ctx.message.author.display_name}#{ctx.message.author.discriminator}", 
+            icon_url=ctx.message.author.avatar_url_as(static_format='png')
+        )
         while True: 
             if font.getlength(toptext) >=w or font.getlength(bottomtext) >= w:
                 font_size -= 1
@@ -173,8 +176,14 @@ class Funny(commands.Cog):
                     frames = []
                     for frame in ImageSequence.Iterator(image):
                         d = ImageDraw.Draw(frame)
-                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), anchor="mt", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
-                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, anchor="ms", font=font, stroke_fill=(0, 0, 0), stroke_width=round(0.05*font_size))
+                        d.text((h/2, w/20), text=toptext, fill=(255,255,255), 
+                            anchor="mt", font=font, stroke_fill=(0, 0, 0), 
+                            stroke_width=round(0.05*font_size)
+                        )
+                        d.text((h/2, w-(w/20)), text=bottomtext, fill=(255,)*3, 
+                            anchor="ms", font=font, stroke_fill=(0, 0, 0), 
+                            stroke_width=round(0.05*font_size)
+                        )
                         del d
                         b = io.BytesIO()
                         frame.save(b, format="GIF")
@@ -198,13 +207,11 @@ class Funny(commands.Cog):
         
         image = user.avatar_url_as(static_format='png')
 
-        try:
-            r = requests.get(image, stream=True)
-            if r.status_code != 200:
-                raise
-            image = Image.open(r.raw)
-        except:
+        
+        r = requests.get(image, stream=True)
+        if r.status_code != 200:
             return await ctx.reply("Image could not be loaded")
+        image = Image.open(r.raw)
 
         FONT = "./impact.ttf"
         h, w = image.size

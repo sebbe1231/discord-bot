@@ -14,7 +14,7 @@ class HelpCommand(commands.HelpCommand):
 
         embed = discord.Embed(title="Help", description=f"Bot made by {bot.get_user(365478245132402689)}")
 
-        for cog, command in groupby(entries, key=key):
+        for cog in groupby(entries, key=key):
             if cog == "Help":
                 continue
 

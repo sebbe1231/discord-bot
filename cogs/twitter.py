@@ -53,7 +53,6 @@ class Twitter(commands.Cog):
         if user.location:
             twitter_embed.add_field(
                 name="Location", value=user.location, inline=True)
-        
         #add an embed field of users most recent tweets, but only if they have any
         if len(api.user_timeline(user_id=user.id_str)) > 0:
             recent_tweet = api.user_timeline(

@@ -28,7 +28,7 @@ class Admin(commands.Cog):
                 if db.get_guild_data(guild_id).bot_audit_id:
                     channel = bot.get_guild(guild_id).get_channel(db.get_guild_data(guild_id).bot_audit_id)
                     await channel.send(f"```{bot.get_user(user_id)} ({user_id}) has been unmuted```")
-    
+
     @staticmethod
     async def user_unban(bot, user_id, guild_id, date, length):
         if db.get_user_relation(user_id, guild_id).ban_date == date and db.get_user_relation(user_id, guild_id).ban_length == length:
@@ -58,7 +58,10 @@ class Admin(commands.Cog):
             # bot audit
             if db.get_guild_data(ctx.guild.id).bot_audit_id:
                 channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
-                await channel.send(f"```{ctx.author} ({ctx.author.id}) has banned {user} ({user.id}) for unlimited time due to \"{reason}\"```")
+                await channel.send(
+                    f"""```{ctx.author} ({ctx.author.id}) has banned {user} 
+                        ({user.id}) for unlimited time due to \"{reason}\"```"""
+                    )
 
             return
 
@@ -71,7 +74,10 @@ class Admin(commands.Cog):
         # bot audit
         if db.get_guild_data(ctx.guild.id).bot_audit_id:
             channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
-            await channel.send(f"```{ctx.author} ({ctx.author.id}) has banned {user} ({user.id}) for {humanfriendly.format_timespan(time)} due to \"{reason}\"```")
+            await channel.send(
+                f"""```{ctx.author} ({ctx.author.id}) has banned {user} ({user.id}) 
+                    for {humanfriendly.format_timespan(time)} due to \"{reason}\"```"""
+                )
         
         self.schedualar.add_job(Admin.user_unmute, DateTrigger(date+timedelta(seconds=time), timezone=timezone.utc), (self.bot, user.id, ctx.guild.id, date, time))
     
@@ -128,7 +134,10 @@ class Admin(commands.Cog):
             # bot audit
             if db.get_guild_data(ctx.guild.id).bot_audit_id:
                 channel = ctx.guild.get_channel(db.get_guild_data(ctx.guild.id).bot_audit_id)
-                await channel.send(f"```{ctx.author} ({ctx.author.id}) has muted {user} ({user.id}) for unlimited time due to \"{reason}\"```")
+                await channel.send(
+                    f"""```{ctx.author} ({ctx.author.id}) has muted {user} 
+                        ({user.id}) for unlimited time due to \"{reason}\"```"""
+                    )
             return
         
         db.get_user_relation(user.id, ctx.guild.id).remove_mute()
@@ -185,7 +194,11 @@ class Admin(commands.Cog):
             exp = str(warn.expire_date)[:-7]
             if warn.perma is True:
                 exp = "Never"
-            embed.add_field(name=f"Warn ID: {warn.id}", value=f"\"{warn.reason}\" \n \n**Warned by:** {ctx.guild.get_member(warn.warned_by_user_id)} \n**Warned:** {str(warn.warn_date)[:-7]} \n**Expires:** {exp}", inline=False)
+            embed.add_field(name=f"Warn ID: {warn.id}", 
+                value=f"""\"{warn.reason}\" \n \n**Warned by:** 
+                {ctx.guild.get_member(warn.warned_by_user_id)} \n**Warned:** {str(warn.warn_date)[:-7]} 
+                \n**Expires:** {exp}""", inline=False
+            )
         
         await ctx.reply(embed=embed)
 
@@ -209,11 +222,15 @@ class Admin(commands.Cog):
             msgs = session.query(DelMessageLog).filter(DelMessageLog.guild_id == ctx.message.guild.id)
         fmsg = "All deleted messages for server:"
         for msg in msgs:
-            if len(fmsg) + len(f"\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} in #{ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}") > 2000:
+            if len(fmsg) + len(f"""\n \n\"{msg.content}\" 
+                \nFrom {ctx.guild.get_member(msg.user_id)} in #{ctx.guild.get_channel(msg.channel_id)} 
+                \n{str(msg.del_time)[:-7]}"""
+            ) > 2000:
                 await ctx.reply(f"```{fmsg}```")
                 fmsg = ""
             else:
-                fmsg = fmsg + f"\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} in #{ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}"
+                fmsg = fmsg + f"""\n \n\"{msg.content}\" \nFrom {ctx.guild.get_member(msg.user_id)} 
+                    in #{ctx.guild.get_channel(msg.channel_id)} \n{str(msg.del_time)[:-7]}"""
         await ctx.reply(f"```{fmsg}```")
 
 

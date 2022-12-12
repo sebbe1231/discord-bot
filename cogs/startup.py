@@ -93,8 +93,9 @@ class Startup(commands.Cog):
     @tasks.loop(hours=24)
     async def del_messeges(self):
         with Session(engine) as session:
+            query = session.query(DelMessageLog).filter(DelMessageLog.del_time < datetime.utcnow()-timedelta(days=1)).delete()
             print("Clearing all deleted messages...")
-            print(f"Messages deleted: {session.query(DelMessageLog).delete()}")
+            print(f"Messages deleted: {query}")
             session.commit()
 
     @tasks.loop(minutes=1.0)

@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:14.5
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    expose:
+      - '5432'
+  discord-bot:
+    build: .
+    restart: always
+    environment:
+      DB_KEY: postgresql://postgres:postgres@postgres/postgres
+      WAIT_HOSTS: postgres:5432
+    env_file:
+      - .env
+    depends_on:
+      - postgres
